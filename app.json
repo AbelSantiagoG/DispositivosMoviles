@@ -2,6 +2,7 @@
   "expo": {
     "name": "posco-movil",
     "slug": "posco-movil",
+    "scheme": "si",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

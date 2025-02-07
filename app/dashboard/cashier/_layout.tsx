@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
 
-const Inventory = () => {
+const Cashier = () => {
   return (
     <View>
         <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
-            Inventory
+            Cashier
         </Text>
     </View>
   )
 }
 
-export default Inventory
+export default Cashier
