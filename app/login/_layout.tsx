@@ -6,7 +6,7 @@ import { Link } from 'expo-router'
 
 const Login = () => {
   return (
-        <View className='flex flex-col'>
+        <SafeAreaView className='flex flex-col'>
             <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
                     Este es el login, vámonos pal dashboard
             </Text>
@@ -23,7 +23,7 @@ const Login = () => {
                     Regístrese
                 </Text>
             </Link>
-        </View>
+        </SafeAreaView>
   )
 }
 
