@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "posco-movil",
-    "slug": "posco-movil",
+    "slug": "posco",
     "scheme": "posco-movil",
     "version": "1.0.0",
     "orientation": "portrait",
