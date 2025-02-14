@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "posco-movil",
-    "slug": "posco-movil",
+    "slug": "posco",
     "scheme": "si",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,10 +20,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.posco"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2452ac79-d021-4942-a31a-d596fb66d0f7"
+      }
+    },
+    "owner": "abelardo4"
   }
 }
