@@ -3,7 +3,7 @@ import { Link } from "expo-router";
 
 const Login = () => {
     return (
-        <View className="flex-1 bg-black items-center justify-center px-6">
+        <View className="bg-black items-center justify-center px-6 h-full">
      
             <Text className="text-white text-4xl font-bold mb-10">posco.</Text>
         
