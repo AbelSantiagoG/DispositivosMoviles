@@ -1,13 +1,33 @@
-import { View, Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Drawer } from 'expo-router/drawer';
 
 const Inventory = () => {
   return (
-    <SafeAreaView>
-        <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
-            Inventory
-        </Text>
-    </SafeAreaView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer>
+        <Drawer.Screen
+          name="categories"
+          options={{
+            drawerLabel: 'categories',
+            title: 'Categorías',
+          }}
+        />
+        <Drawer.Screen
+          name="products"
+          options={{
+            drawerLabel: 'products',
+            title: 'Productos',
+          }}
+        />
+        <Drawer.Screen
+          name="suppliers"
+          options={{
+            drawerLabel: 'suppliers',
+            title: 'Proveedores',
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   )
 }
 
