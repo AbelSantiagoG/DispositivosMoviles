@@ -1,13 +1,8 @@
 {
   "expo": {
     "name": "posco-movil",
-<<<<<<< HEAD
-    "slug": "posco",
-    "scheme": "si",
-=======
     "slug": "posco-movil",
     "scheme": "posco-movil",
->>>>>>> 1a617e58e7eb8a87c0673e0ddfedc2652fe30f27
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
