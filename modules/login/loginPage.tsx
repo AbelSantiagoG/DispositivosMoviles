@@ -1,7 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
 
-const Login = () => {
+const loginPageModule = () => {
     return (
         <View className="flex-1 bg-black items-center justify-center px-6">
      
@@ -31,22 +30,8 @@ const Login = () => {
             <TouchableOpacity>
                 <Text className="text-gray-500 mt-2 text-sm">Olvidé mi contraseña</Text>
             </TouchableOpacity>
-            
-            <Link href='/dashboard'>
-                <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
-                    Dashboard
-                </Text>
-            </Link>
-            <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
-                    ¿No tiene cuenta pa?
-            </Text>
-            <Link href='/register'>
-                <Text className='bg-slate-200 text-3xl p-5 rounded-lg'>
-                    Regístrese
-                </Text>
-            </Link>
         </View>
     );
 }
 
-export default Login
+export default loginPageModule

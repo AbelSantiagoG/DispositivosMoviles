@@ -6,7 +6,7 @@ import "../../global.css";
 
 const DashboardLayout = () => {
     return (
-        <Tabs>
+        <Tabs screenOptions= {{headerShown: false}}>
             <Tabs.Screen 
                 name='cashier'
                 options={{

@@ -4,26 +4,26 @@ import { Drawer } from 'expo-router/drawer';
 const Inventory = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer>
+      <Drawer >
         <Drawer.Screen
           name="categories"
           options={{
             drawerLabel: 'categories',
-            title: 'Categorías',
+            title: 'Categorías'
           }}
         />
         <Drawer.Screen
           name="products"
           options={{
             drawerLabel: 'products',
-            title: 'Productos',
+            title: 'Productos'
           }}
         />
         <Drawer.Screen
           name="suppliers"
           options={{
             drawerLabel: 'suppliers',
-            title: 'Proveedores',
+            title: 'Proveedores'
           }}
         />
       </Drawer>
