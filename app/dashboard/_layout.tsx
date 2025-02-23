@@ -1,7 +1,8 @@
-import { Tabs } from 'expo-router'
+import { Tabs, router } from 'expo-router'
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, Image } from 'react-native'
+import { View, Image, TouchableOpacity } from 'react-native'
 
 import "../../global.css";
 
@@ -10,7 +11,9 @@ const DashboardLayout = () => {
         <SafeAreaView className='flex-1 bg-black'>
             <View className="flex-row justify-between items-center p-4">
                 <Image source={require('../../assets/logo.png')} className='w-20 h-20 mr-auto' resizeMode="contain" />
-                <AntDesign name="user" size={24} color="white" />
+                <TouchableOpacity onPress={() => router.push('/dashboard/profile')}>
+                    <AntDesign name="user" size={24} color="white" />
+                </TouchableOpacity>
             </View>
             <View className='flex-1 bg-black'>
                 <Tabs screenOptions={{headerShown: false, tabBarActiveTintColor: "white",tabBarStyle: {  backgroundColor: "black", height: 65  }}}>
@@ -24,30 +27,45 @@ const DashboardLayout = () => {
                         }}
                     />
                     <Tabs.Screen
-                        name='employees'
+                        name='inventory'
                         options={{
-                            title: 'Empleados',
+                            title: 'Inventario',
                             tabBarIcon: ({ color }) => (
-                                <AntDesign name="user" size={22} color={color} />
+                                <FontAwesome5 name="warehouse" size={20} color={color} />
                             )
                         }}
                     />
                     <Tabs.Screen
-                        name='profile'
+                        name='employees'
                         options={{
-                            title: 'Perfil',
+                            title: 'Empleados',
                             tabBarIcon: ({ color }) => (
-                                <AntDesign name="profile" size={22} color={color} />
+                                <MaterialIcons name="people" size={26} color={color} />
                             )
                         }}
                     />
                     <Tabs.Screen
                         name='reports'
                         options={{
-                            title: 'Reportes',
+                            title: 'Finanzas',
                             tabBarIcon: ({ color }) => (
-                                <AntDesign name="barschart" size={22} color={color} />
+                                <FontAwesome5 name="money-bill-wave" size={20} color={color} />
                             )
+                        }}
+                    />
+                    <Tabs.Screen
+                        name='cashier'
+                        options={{
+                            title: 'POS',
+                            tabBarIcon: ({ color }) => (
+                                <FontAwesome5 name="store" size={20} color={color} />
+                            )
+                        }}
+                    />
+                    <Tabs.Screen
+                        name='profile'
+                        options={{
+                            href: null,
                         }}
                     />
                 </Tabs>

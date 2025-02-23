@@ -29,9 +29,12 @@ const Login = () => {
                         <Text className="text-white text-lg font-bold">Iniciar sesión</Text>
                     </TouchableOpacity>
                 </Link>
-                <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-full items-center mb-4">
-                    <Text className="text-white text-lg font-bold">Crear Cuenta</Text>
-                </TouchableOpacity>
+                <Link href='/register' asChild>
+                    <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-full items-center mb-4">
+                        <Text className="text-white text-lg font-bold">Crear Cuenta</Text>
+                    </TouchableOpacity>
+                </Link>
+                
 
                 <TouchableOpacity>
                     <Text className="text-gray-500 mt-2 text-sm">Olvidé mi contraseña</Text>

@@ -31,7 +31,7 @@ const Dashboard = () => {
                 </View>
 
                 <View className="w-[48%] bg-neutral-800 p-4 rounded-2xl mb-4">
-                    <Ionicons name="refresh" size={24} color="white" />
+                    <FontAwesome5 name="store" size={20} color="white" />
                     <Text className="text-white font-semibold mt-2">Punto de Venta</Text>
                     <Text className="text-gray-400 text-sm">Procesamiento de ventas sin problemas.</Text>
                 </View>
