@@ -22,6 +22,8 @@ export const empresaFormSchema = z.object({
 
 export const planFormSchema = z.object({
     plan: z.string().min(1, 'Debe seleccionar un plan'),
+        numeroTarjeta: z.string().nonempty('Ingrese el número de tarjeta'),
+    fechaExpiracion: z.string().nonempty('Ingrese la fecha de expiración'),
 });
 
 export type UserFormData = z.infer<typeof userFormSchema>;
