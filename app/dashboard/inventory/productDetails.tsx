@@ -5,7 +5,7 @@ import { Link, useRouter } from "expo-router";
 
 const productDetails = () => {
     return (
-        <View className='h-full bg-black p-4'>
+        <ScrollView className='h-full bg-black p-4'>
             <View className='rounded-2xl overflow-hidden h-64'>
                 <Image source={require('../../../assets/detailsProduct.png')} className='w-full h-full' />
             </View>
@@ -24,7 +24,7 @@ const productDetails = () => {
                     <Text className="text-black font-semibold"> Eliminar </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 

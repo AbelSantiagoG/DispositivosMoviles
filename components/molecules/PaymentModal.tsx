@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import { Control } from 'react-hook-form';
 import { modalContainer, modalTitle } from '../Tokens';
@@ -17,49 +18,52 @@ interface PaymentModalProps {
     };
 }
 
-export function PaymentModal({ 
-    isVisible, 
-    onClose, 
-    onSubmit, 
+export function PaymentModal({
+    isVisible,
+    onClose,
+    onSubmit,
     control,
-    errors 
+    errors
 }: PaymentModalProps) {
     return (
         <Modal isVisible={isVisible} onBackdropPress={onClose}>
-            <View className={modalContainer}>
-                <Text className={modalTitle}>Ingrese los datos de pago</Text>
-                
-                <CustomInput
+            <View className="bg-white p-6 rounded-lg">
+                <Text className="text-black text-lg font-bold mb-4 text-center">Ingrese los datos de pago</Text>
+                <Controller
                     control={control}
                     name="numeroTarjeta"
-                    label="Número de Tarjeta"
-                    placeholder="Número de Tarjeta"
-                    keyboardType="numeric"
-                    error={errors.numeroTarjeta?.message}
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            className="border border-gray-400 rounded-lg p-2 mb-4"
+                            placeholder="Número de Tarjeta"
+                            keyboardType="numeric"
+                            value={value}
+                            onChangeText={onChange}
+                        />
+                    )}
                 />
-
-                <CustomInput
+                <Controller
                     control={control}
                     name="fechaExpiracion"
-                    label="Fecha de Expiración"
-                    placeholder="MM/YY"
-                    keyboardType="numeric"
-                    error={errors.fechaExpiracion?.message}
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            className="border border-gray-400 rounded-lg p-2 mb-4"
+                            placeholder="Fecha de Expiración (MM/YY)"
+                            keyboardType="numeric"
+                            value={value}
+                            onChangeText={onChange}
+                        />
+                    )}
                 />
-
                 <View className="flex-row justify-between mt-4">
-                    <Button 
-                        title="Cancelar" 
-                        variant="secondary" 
-                        onPress={onClose}
-                    />
-                    <Button 
-                        title="Pagar Ahora" 
-                        variant="primary" 
-                        onPress={onSubmit}
-                    />
+                    <TouchableOpacity className="bg-gray-600 py-2 px-4 rounded-lg" onPress={onClose}>
+                        <Text className="text-white font-bold">Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity className="bg-stone-800 py-2 px-4 rounded-lg" onPress={onSubmit}>
+                        <Text className="text-white font-bold">Pagar Ahora</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>
     );
-} 
+}

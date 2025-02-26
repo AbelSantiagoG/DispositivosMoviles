@@ -7,7 +7,7 @@ export const safeAreaContainer = 'flex-1 bg-black';
 
 // Inputs
 export const inputContainer = 'mx-6 bg-zinc-900 text-white p-4 rounded-2xl';
-export const inputLabel = 'text-white mb-2 mx-6';
+export const inputLabel = 'text-white mb-2 mx-6 mt-3';
 export const errorText = 'text-red-500 mt-1 mx-5';
 
 // Buttons
@@ -34,6 +34,6 @@ export const modalTitle = 'text-black text-lg font-bold mb-4 text-center';
 export const modalInput = 'border border-gray-400 rounded-lg p-2 mb-4';
 
 // Logo Container
-export const logoContainer = 'items-center justify-center mt-10';
-export const logoWrapper = 'w-52 h-20 mb-4';
-export const logo = 'w-full h-full';
+export const logoContainer = 'items-center justify-center mt-6';
+export const logoWrapper = 'w-52 h-20 ';
+export const logo = 'w-3/4 h-3/4';
