@@ -28,7 +28,7 @@ const Login = () => {
     };
 
     return (
-        <>
+        <View>
             <StatusBar style="dark" />
             <View className="bg-black items-center justify-center px-6 h-full">
                 <View className="flex-1 justify-end w-full items-center">
@@ -83,7 +83,7 @@ const Login = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </>
+        </View>
     );
 };
 

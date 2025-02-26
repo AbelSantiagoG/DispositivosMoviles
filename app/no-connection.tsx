@@ -12,8 +12,8 @@ export default function NoConnection() {
             </View>
             
             <View className="flex-1 items-center justify-center px-4">
-                <MaterialCommunityIcons name="wifi-off" size={100} color="white" />
-                <Text className="text-white text-2xl font-bold text-center mt-6">
+                <MaterialCommunityIcons name="wifi-off" size={100} color="black" />
+                <Text className="text-black text-2xl font-bold text-center mt-6">
                     Sin conexión a Internet
                 </Text>
                 <Text className="text-gray-400 text-center mt-4 text-lg">

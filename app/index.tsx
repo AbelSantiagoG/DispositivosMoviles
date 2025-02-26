@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
   return (
-    <SafeAreaView>
+    <SafeAreaView className='h-full bg-black'>
       <Login/>
     </SafeAreaView>
   )
