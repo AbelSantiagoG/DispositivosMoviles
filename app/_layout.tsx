@@ -20,10 +20,6 @@ const HomeLayout = () => {
     }
   }, [])
 
-  if (!isConnected) {
-    return null;
-  }
-
   return (
     
     <Stack>
