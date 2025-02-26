@@ -36,4 +36,4 @@ export const modalInput = 'border border-gray-400 rounded-lg p-2 mb-4';
 // Logo Container
 export const logoContainer = 'items-center justify-center mt-6';
 export const logoWrapper = 'w-52 h-20 ';
-export const logo = 'w-3/4 h-3/4';
+export const logo = 'w-20 h-20';

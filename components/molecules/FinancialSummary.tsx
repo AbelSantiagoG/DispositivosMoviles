@@ -19,7 +19,7 @@ export function FinancialSummary({ amount }: FinancialSummaryProps) {
             <Text className="text-white font-semibold text-4xl mt-4">
                 ${amount.toLocaleString()}
             </Text>
-            <Link href="/reports" asChild>
+            <Link href="/dashboard/reports" asChild>
                 <TouchableOpacity className="bg-zinc-700 p-4 rounded-full items-center mt-6">
                     <Text className="text-white text-lg font-bold">
                         Administrar

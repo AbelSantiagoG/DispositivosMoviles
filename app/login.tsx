@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { Link, useRouter } from "expo-router";
-import { loginFormSchema, loginFormData } from "../../validators/login";
+import { loginFormSchema, loginFormData } from "../validators/login";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,7 +30,7 @@ const Login = () => {
         <View className="bg-black items-center justify-center px-6 h-full">
             <View className="flex-1 justify-end w-full items-center">
                 <View className="w-52 h-20 mb-4">
-                    <Image className="w-full h-full" source={require("../../assets/logo.png")} resizeMode="contain" />
+                    <Image className="w-full h-full" source={require("../assets/logo.png")} resizeMode="contain" />
                 </View>
 
                 <Controller
@@ -75,7 +75,6 @@ const Login = () => {
                         <Text className="text-white text-lg font-bold">Crear Cuenta</Text>
                     </TouchableOpacity>
                 </Link>
-
                 <TouchableOpacity>
                     <Text className="text-gray-500 mt-2 text-sm">Olvidé mi contraseña</Text>
                 </TouchableOpacity>

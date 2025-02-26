@@ -22,7 +22,7 @@ const InventoryLayout = () => {
       <Stack.Screen name="categories" options={{ headerShown: true }} />
       <Stack.Screen name="products" options={{ headerShown: true, headerTitle:"Gestión Productos"}} />
       <Stack.Screen name="suppliers" options={{ headerShown: true }} />
-      <Stack.Screen name="productDetails" options={{ headerShown: true, headerTitle: "Detalles del producto" }} />
+      <Stack.Screen name="productDetails/[idProduct]" options={{ headerShown: true, headerTitle: "Detalles del producto" }} />
     </Stack>
   )
 }

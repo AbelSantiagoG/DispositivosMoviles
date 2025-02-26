@@ -14,17 +14,20 @@ const Dashboard = () => {
         {
             title: 'Gestión de Empleados',
             description: 'Rastrea empleados y establece permisos.',
-            icon: <MaterialIcons name="people" size={24} color="white" />
+            icon: <MaterialIcons name="people" size={24} color="white" />,
+            href: '/dashboard/employees/'
         },
         {
             title: 'Gestión Financiera',
             description: 'Monitorea e informa tus finanzas.',
-            icon: <FontAwesome5 name="money-bill-wave" size={20} color="white" />
+            icon: <FontAwesome5 name="money-bill-wave" size={20} color="white" />,
+            href: '/dashboard/reports/'
         },
         {
             title: 'Punto de Venta',
             description: 'Procesamiento de ventas sin problemas.',
-            icon: <FontAwesome5 name="store" size={20} color="white" />
+            icon: <FontAwesome5 name="store" size={20} color="white" />,
+            href: '/dashboard/cashier/'
         }
     ];
 

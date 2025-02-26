@@ -1,10 +1,29 @@
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('user');
+  const [userPassword, setUserPassword] = useState<string | null>(null);
+
+    const getInfoUser = async () => {
+        try {
+            const infoUser = await AsyncStorage.getItem('@infologin');
+            if (infoUser) {
+                const parsedInfo = JSON.parse(infoUser);
+                setUserPassword(parsedInfo.password); 
+            }
+        } catch (error) {
+            console.log('Error al obtener la información del usuario:', error);
+        }
+    };
+
+    useEffect(() => {
+        getInfoUser();
+    }, []);
+
 
   return (
     <ScrollView className="h-full bg-black p-4">
@@ -30,7 +49,9 @@ const Profile = () => {
             <FontAwesome name="user-circle" size={55} color="white" />
             <Text className="text-gray-400 font-semibold text-2xl mt-5 mb-2">Admin Pepito</Text>
             <Text className="text-gray-400 text-md mb-1">Email: adminPepito@gmail.com</Text>
+            <Text className="text-gray-400 text-md mb-1">Contraseña: {userPassword}</Text>
             <Text className="text-gray-400 text-md">Teléfono: 3142160192 </Text>
+            
           </View>
           <View className='mt-5'>
             <View>

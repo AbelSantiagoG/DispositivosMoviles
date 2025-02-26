@@ -1,5 +1,5 @@
 import React from 'react'
-import Login from './login/_layout'
+import Login from './login'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const index = () => {
