@@ -63,7 +63,7 @@ export default function RegisterEmpresa() {
                 </View>
 
                 <View>
-                    <Text className="text-white mb-2 mx-6">Nombre de la Empresa</Text>
+                    <Text className="text-white mb-1 mx-6 mt-3">Nombre de la Empresa</Text>
                     <Controller
                         control={control}
                         name="nombre"
@@ -83,7 +83,7 @@ export default function RegisterEmpresa() {
                 </View>
 
                 <View>
-                    <Text className="text-white mb-2 mx-6">Email</Text>
+                    <Text className="text-white mb-2  mx-6 mt-3">Email</Text>
                     <Controller
                         control={control}
                         name="email"
@@ -105,7 +105,7 @@ export default function RegisterEmpresa() {
                 </View>
 
                 <View>
-                    <Text className="text-white mb-2 mx-6">Teléfono</Text>
+                    <Text className="text-white mb-2 mx-6 mt-3">Teléfono</Text>
                     <Controller
                         control={control}
                         name="telefono"
@@ -126,7 +126,7 @@ export default function RegisterEmpresa() {
                 </View>
 
                 <View>
-                    <Text className="text-white mb-2 mx-6">Ciudad</Text>
+                    <Text className="text-white mb-2 mx-6 mt-3">Ciudad</Text>
                     <Controller
                         control={control}
                         name="ciudad"

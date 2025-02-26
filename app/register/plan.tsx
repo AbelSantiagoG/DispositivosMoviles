@@ -20,7 +20,7 @@ const PLANES = [
         precio: 49900,
         descripcion: 'Diseñado para pequeños supermercados y restaurantes'
     },
-    
+
     {
         id: 'medio',
         nombre: 'Plan Basico',
@@ -34,7 +34,7 @@ export default function RegisterPlan() {
         resolver: zodResolver(planFormSchema)
     });
     const [modalVisible, setModalVisible] = useState(false);
-    
+
     const onSubmit = (data: PlanFormData) => {
         console.log(data);
         setModalVisible(false);
@@ -48,8 +48,8 @@ export default function RegisterPlan() {
     };
 
     return (
-        <View className="flex-1 bg-black px-4">
-            <View className="flex-row justify-center mb-10 p-3 rounded-full bg-transparent border-white border-2 mx-4">
+        <View className=" bg-black px-4 h-full">
+            <View className="flex-row justify-center  p-3 rounded-full bg-transparent border-white border-2 mx-4">
                 <View className="flex-row items-center mx-2">
                     <View className="w-10 h-10 rounded-full bg-neutral-500 items-center justify-center">
                         <Text className="text-white font-bold">1</Text>
@@ -69,16 +69,14 @@ export default function RegisterPlan() {
                     <AntDesign name="shoppingcart" size={20} color="white" className='ml-1' />
                 </View>
             </View>
-
-            <Text className="text-white text-xl font-bold text-center mt-11">Elige tu Plan</Text>
+            <Text className="text-white text-xl font-bold text-center mt-32">Elige tu Plan</Text>
 
             <FlatList
                 data={PLANES}
                 horizontal
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ alignItems: 'center' }}
                 renderItem={({ item: plan }) => (
-                    <View key={plan.id} className="bg-white rounded-xl p-4 m-2 w-80 mt-4">
+                    <View key={plan.id} className="bg-white rounded-xl p-4 mr-4 w-80 max-h-60 mt-5">
                         <Text className="text-black text-lg font-bold text-center">{plan.nombre}</Text>
                         <Text className="text-gray-600 text-center text-sm mt-2">{plan.descripcion}</Text>
                         <View className="flex-row justify-center items-baseline mt-4">
@@ -92,6 +90,7 @@ export default function RegisterPlan() {
                 )}
             />
             {errors.plan && <Text className="text-red-500 text-center mt-2">{errors.plan.message}</Text>}
+
 
             <Modal isVisible={modalVisible} onBackdropPress={() => setModalVisible(false)}>
                 <View className="bg-white p-6 rounded-lg">

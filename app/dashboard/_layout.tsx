@@ -41,8 +41,8 @@ const DashboardLayout = () => {
                 </TouchableOpacity>
             </View>
 
-            <View className='flex-1 bg-black'>
-                <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: "white", tabBarStyle: { backgroundColor: "black", height: 65 } }}>
+            <View className='flex-1  '>
+                <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: "white", tabBarStyle: { backgroundColor: "black", height: 65, borderColor: "black" } }}>
                     <Tabs.Screen
                         name='dashboard'
                         options={{
@@ -98,6 +98,11 @@ const DashboardLayout = () => {
             </View>
         </SafeAreaView>
     );
+
 };
 
 export default DashboardLayout;
+
+
+
+
