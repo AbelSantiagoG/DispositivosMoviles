@@ -9,7 +9,7 @@ const productDetails = () => {
 
     return (
         <View className='h-full bg-black p-4'>
-            <View className='rounded-2xl overflow-hidden h-64'>
+            <View className='rounded-2xl overflow-hidden h-56'>
                 <Image source={require('../../../../assets/detailsProduct.png')} className='w-full h-full' />
             </View>
             <View className='mt-4'>
