@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar'
+import { authService } from '../lib/auth';
 
 const Login = () => {
     const router = useRouter();
@@ -19,8 +20,14 @@ const Login = () => {
 
     const onSubmit = async (data: loginFormData) => {
         try {
-            await AsyncStorage.setItem('@infologin', JSON.stringify(data));
-            console.log("Datos guardados en AsyncStorage:", data);
+            //await AsyncStorage.setItem('@infologin', JSON.stringify(data));
+            //console.log("Datos guardados en AsyncStorage:", data);
+            const response = await authService.login({
+                email: data.email,
+                password: data.password
+            });
+
+            console.log(response);
             router.navigate('/dashboard');
         } catch (e) {
             console.log('Error al guardar la información:', e);

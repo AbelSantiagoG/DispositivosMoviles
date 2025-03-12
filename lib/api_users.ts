@@ -1,4 +1,4 @@
-const API = 'https://martinostios.com/docs'
+const API = 'https://martinostios.com/api/v1'
 
 export const getProducts = async () => {
 
