@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }: Props) => {
             }
         } catch (error) {
             console.error('Error checking auth token:', error);
+            router.replace('/login');
             setUser(null);
         } finally {
             setLoading(false);
