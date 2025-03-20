@@ -27,7 +27,7 @@ const Profile = () => {
     await authService.logout();
     const token = await AsyncStorage.getItem('@auth');
     //console.log(token);
-    router.navigate('/');
+    router.replace('/login');
   }
 
   useEffect(() => {

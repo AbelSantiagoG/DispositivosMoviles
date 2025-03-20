@@ -37,8 +37,16 @@ export const authService = {
     },
 
     async getCurrentUser() {
-        const response = await api.get('/employees/me');
-        return response.data;
+        try {
+            const response = await api.get('/employees/me');
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            console.log('Error al obtener la información del usuario:', error);
+            return null;
+        }
+        
+        
     },
 
     async logout() {

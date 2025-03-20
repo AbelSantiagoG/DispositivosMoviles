@@ -27,8 +27,8 @@ const Login = () => {
                 password: data.password
             });
 
-            console.log(response);
-            router.navigate('/dashboard');
+            
+            router.replace('/dashboard');
         } catch (e) {
             console.log('Error al guardar la información:', e);
         }

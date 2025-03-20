@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode,useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserDAO } from '../interfaces/Auth';
+import { authService } from '../lib/auth';
+import { Text } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export interface AuthContextType {
-    user: any; // Puedes definir un tipo más específico
-    setUser: (user: any) => void;
+    user: UserDAO | null; 
+    setUser: (user: UserDAO) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -18,17 +22,18 @@ interface Props {
 export const AuthProvider = ({ children }: Props) => {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
 
-    // Simula la comprobación del token almacenado en AsyncStorage
+    
     useEffect(() => {
         const checkAuth = async () => {
         try {
-            const token = await AsyncStorage.getItem('@auth_token');
-            if (token) {
-            // Aquí podrías validar el token y obtener datos del usuario
-            setUser({ token });
+            const data: UserDAO = await authService.getCurrentUser();            
+            if (data) {
+                setUser(data);
             } else {
-            setUser(null);
+                setUser(null);
+                router.replace('/login');
             }
         } catch (error) {
             console.error('Error checking auth token:', error);
@@ -42,13 +47,14 @@ export const AuthProvider = ({ children }: Props) => {
     }, []);
 
     if (loading) {
-        // Puedes mostrar una pantalla de carga mientras se determina el estado de autenticación
-        return null; // o un componente <LoadingScreen />
+        return <Text>Loading...</Text>;
     }
 
     return (
         <AuthContext.Provider value={{ user, setUser }}>
-        {children}
+            {children}
         </AuthContext.Provider>
     );
 };
+
+export const useAuth = () => useContext(AuthContext);
