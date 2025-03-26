@@ -32,15 +32,9 @@ const Products = () => {
         }
     ];
 
-    const handleAddProduct = () => {
-        // Aquí iría la lógica para agregar un nuevo producto
-        console.log('Agregar nuevo producto');
-    };
-
     return (
         <ProductList 
             products={mockProducts}
-            onAddProduct={handleAddProduct}
         />
     );
 };

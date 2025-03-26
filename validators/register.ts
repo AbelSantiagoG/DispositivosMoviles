@@ -22,10 +22,18 @@ export const empresaFormSchema = z.object({
 
 export const planFormSchema = z.object({
     plan: z.string().min(1, 'Debe seleccionar un plan'),
-        numeroTarjeta: z.string().nonempty('Ingrese el número de tarjeta'),
+    numeroTarjeta: z.string().nonempty('Ingrese el número de tarjeta'),
     fechaExpiracion: z.string().nonempty('Ingrese la fecha de expiración'),
+});
+
+export const productoFormSchema = z.object({
+    nombre: z.string().min(1, 'El nombre del producto es requerido'),
+    descripcion: z.string().min(1, 'La descripción del producto es requerida'),
+    precio: z.number().min(1, 'El precio del producto es requerido'),
+    stock: z.number().min(1, 'La cantidad del producto es requerida'),
 });
 
 export type UserFormData = z.infer<typeof userFormSchema>;
 export type EmpresaFormData = z.infer<typeof empresaFormSchema>;
 export type PlanFormData = z.infer<typeof planFormSchema>; 
+export type ProductoFormData = z.infer<typeof productoFormSchema>;

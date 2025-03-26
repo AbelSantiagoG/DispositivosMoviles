@@ -4,23 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { authService } from '../../lib/auth'
-import { UserDAO } from '../../interfaces/Auth'
 import { useRouter } from "expo-router";
+import { useAuth } from '../../context/AuthContext';
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('user');
   const router = useRouter();
-  //const [userPassword, setUserPassword] = useState<string | null>(null);
-  const [user, setUser] = useState<UserDAO | null>(null);
-
-  const getInfoUser = async () => {
-    try {
-      const data: UserDAO = await authService.getCurrentUser();
-      setUser(data);
-    } catch (error) {
-      console.log('Error al obtener la información del usuario:', error);
-    }
-  };
+  const { user } = useAuth();
 
 
   const logout = async () => {
@@ -29,11 +19,6 @@ const Profile = () => {
     //console.log(token);
     router.replace('/login');
   }
-
-  useEffect(() => {
-    getInfoUser();
-
-  }, []);
 
 
   return (
