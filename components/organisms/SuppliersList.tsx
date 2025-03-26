@@ -1,12 +1,9 @@
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useState } from 'react';
-import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { proveedoresFormSchema, type ProveedorFormData } from '../../validators/suppliers';
 import {SuppierDAO} from '../../interfaces/Auth';
-import { EmployeesCard } from '../molecules/EmployeesCard';
-import { AddEmployeesModal } from '../molecules/AddEmployeesModal';
 import { AddSuppliersModal } from '../molecules/AddSuppliersModal';
 import { SuppliersCard } from '../molecules/SuppliersCard';
 
