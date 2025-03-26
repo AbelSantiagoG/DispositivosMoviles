@@ -1,29 +1,70 @@
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { useState } from 'react';
+import { View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { proveedoresFormSchema, type ProveedorFormData } from '../../validators/suppliers';
-import {SuppierDAO} from '../../interfaces/Auth';
+
 import { AddSuppliersModal } from '../molecules/AddSuppliersModal';
 import { SuppliersCard } from '../molecules/SuppliersCard';
+import { supplierService, SupplierData } from '../../lib/suppliers';
 
 interface SuppliersListProps {
-    suppliers: SuppierDAO[];
+    suppliers: Array<SupplierData & { id: number }>;
+    listSuppliers: () => void;
 }
 
-export function SuppliersList({ suppliers }: SuppliersListProps) {
-
-    const { handleSubmit, setValue, control, formState: { errors } } = useForm<ProveedorFormData>({
-        resolver: zodResolver(proveedoresFormSchema)
+export function SuppliersList({ suppliers: initialSuppliers, listSuppliers }: SuppliersListProps) {
+    const [suppliers, setSuppliers] = useState<Array<SupplierData & { id: number }>>(initialSuppliers);
+    
+    const { handleSubmit, control, formState: { errors }, reset } = useForm<ProveedorFormData>({
+        resolver: zodResolver(proveedoresFormSchema),
+        defaultValues: {
+            nombre: '',
+            email: '',
+            telefono: '',
+            empresa: '1'
+        }
     });
+
+    useEffect(() => {
+        setSuppliers(initialSuppliers);
+    }, [initialSuppliers]);
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    const onSubmit = (data: ProveedorFormData) => {
-        console.log(data);
-        setModalVisible(false);
-        //alert('Pago exitoso');
-        //router.replace('/login');
+    const onSubmitForm = () => {
+        handleSubmit(createSupplier)();
+    };
+
+    const createSupplier = async (data: ProveedorFormData) => {
+        try {
+            
+            const supplierData: SupplierData = {
+                name: data.nombre,
+                phone_number: data.telefono,
+                email: data.email,
+                enterprise_id: Number(data.empresa)
+            };
+            
+            console.log('Enviando datos para crear :', supplierData);
+            
+            await supplierService.createSupplier(supplierData);
+            
+            setModalVisible(false);
+            reset();
+            listSuppliers(); 
+            Alert.alert('Éxito', 'Creado correctamente');
+        } catch (error: any) {
+            console.error('Error al crear :', error);
+            
+            
+            let errorMsg = 'No se pudo crear . Inténtelo de nuevo.';
+            if (error.response && error.response.data && error.response.data.message) {
+                errorMsg = `Error: ${error.response.data.message}`;
+            }
+            
+            Alert.alert('Error', errorMsg);
+        }
     };
 
     const seleccionar = () => {
@@ -34,13 +75,13 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
         <View className='h-full bg-black p-4'>
             <ScrollView>
                 <View className="flex flex-row flex-wrap justify-between mb-2">
-                    {suppliers.map((suppliers) => (
+                    {suppliers.map((supplier) => (
                         <SuppliersCard
-                            key={suppliers.id}
-                            name={suppliers.name}
-                            telephone={suppliers.telephone}
+                            key={supplier.id}
+                            name={supplier.name}
+                            telephone={supplier.phone_number}
                             image={require('../../assets/empleado.png')}
-                            href={`/dashboard/inventory/supplierDetails/${suppliers.id}`}
+                            href={`/dashboard/inventory/supplierDetails/${supplier.id}`}
                         />
                     ))}
                 </View>
@@ -54,8 +95,11 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
             </TouchableOpacity>
             <AddSuppliersModal
                 isVisible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                onSubmit={handleSubmit(onSubmit)}
+                onClose={() => {
+                    setModalVisible(false);
+                    reset();
+                }}
+                onSubmit={onSubmitForm}
                 control={control}
                 errors={errors}
             />

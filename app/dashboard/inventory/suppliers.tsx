@@ -1,49 +1,37 @@
 import { View, Text } from 'react-native'
-import React from 'react'
-import {SuppliersList} from '../../../components/organisms/SuppliersList'
+import React, { useEffect, useState } from 'react'
+import { ProtectedRoute } from '../../../context/ProtectedRoute';
+import { SuppliersList } from '../../../components/organisms/SuppliersList'
+import { supplierService, SupplierData } from '../../../lib/suppliers'
 import { SuppierDAO } from '../../../interfaces/Auth'
 
+const Suppliers = () => {
+  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const mockSuppliers: SuppierDAO[]= [
-  {
-    id: 1,
-    name: 'Proveedor 1',
-    telephone: '123-456-7890',
-    email : 'proveedor1@gmail.com',
-    enterprise: {
-      id: 1,
-      name: 'Empresa 1',
-      NIT: '123456789',
+  const listESuppliers = async () => {
+    try {
+      const data = await supplierService.getAllSuppliers();
+      setSuppliers(data);
+    } catch (error) {
+      console.error('Error al obtener proveedor:', error);
+    } finally {
+      setLoading(false); 
     }
-  },
-  {
-    id: 2,
-    name: 'Proveedor 2',
-    telephone: '987-654-3210',
-    email : 'proveedor2@gmail.com',
-    enterprise: {
-      id: 2,
-      name: 'Empresa 2',
-      NIT: '23456789',
-    }
-  },
-  {
-    id: 3,
-    name: 'Proveedor 3',
-    telephone: '555-555-5555',
-    email : 'proveedor3@gmail.com',
-    enterprise: {
-      id: 3,
-      name: 'Empresa 3',
-      NIT: '09876',
-    }
-  },
-]
+  };
+  useEffect(() => {
+    listESuppliers();
+  }, []);
 
-const suppliers = () => {
   return (
-    <SuppliersList suppliers={mockSuppliers} />
-  )
+    <ProtectedRoute permissionName="GESTIONAR_INVENTARIO">
+      {loading ? (
+        <Text className="text-white text-center mt-10">Cargando proveedores...</Text>
+      ) : (
+        <SuppliersList suppliers={suppliers} listSuppliers={listESuppliers} />
+      )}
+    </ProtectedRoute>
+  );
 }
 
-export default suppliers
+export default Suppliers;

@@ -1,10 +1,12 @@
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import { Control } from 'react-hook-form';
 import { ProductoFormData } from '../../validators/products';
 import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
+import { useState, useEffect } from 'react';
+import { categoriesService, CategorieData } from '../../lib/categories';
 
 
 interface AddProductModalProps {
@@ -16,13 +18,9 @@ interface AddProductModalProps {
 }
 
 export function AddProductModal({ isVisible, onClose, onSubmit, control, errors }: AddProductModalProps) {
-    const mockCategorias = [
-        { id: '1', nombre: 'Categoría 1' },
-        { id: '2', nombre: 'Categoría 2' },
-        { id: '3', nombre: 'Categoría 3' },
-        { id: '4', nombre: 'Categoría 4' },
-        { id: '5', nombre: 'Categoría 5' }
-    ];
+    const [categorias, setCategorias] = useState<CategorieData[]>([]);
+    const [loading, setLoading] = useState(true);
+    
 
     const mockProveedores = [
         { id: '1', nombre: 'Proveedor 1' },
@@ -31,6 +29,22 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
         { id: '4', nombre: 'Proveedor 4' },
         { id: '5', nombre: 'Proveedor 5' }
     ];
+    
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const data = await categoriesService.getAllCategories();
+                setCategorias(data);
+            } catch (error) {
+                console.error('Error al obtener categorías:', error);
+                Alert.alert('Error', 'No se pudo cargar la lista de categorías');
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchCategorias();
+    }, [isVisible]);
 
     return (
         <Modal
@@ -108,16 +122,16 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
                     render={({ field: { onChange, value } }) => (
                         <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
                             <Picker
-                                selectedValue={value}
-                                onValueChange={(itemValue) => onChange(itemValue)}
+                                selectedValue={value && value.length > 0 ? value[0] : ''}
+                                onValueChange={(itemValue) => onChange([itemValue])}
                                 style={{ color: 'white' }}
                             >
                                 <Picker.Item label="Seleccione una categoría" value="" />
-                                {mockCategorias.map((categoria) => (
+                                {categorias.map((categoria) => (
                                     <Picker.Item
-                                        key={categoria.id}
-                                        label={categoria.nombre}
-                                        value={categoria.id}
+                                        key={categoria.id.toString()}
+                                        label={categoria.name}
+                                        value={categoria.id.toString()}
                                     />
                                 ))}
                             </Picker>
@@ -148,7 +162,7 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
                     )}
                 />
                 <View className="flex-row justify-between mt-4">
-                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4 flex-1" onPress={onClose}>
+                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4 flex-1" onPress={onSubmit}>
                         <Text className="text-black font-semibold text-center text-xl">➕ Agregar Producto</Text>
                     </TouchableOpacity>
                     <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 mr-4 " >

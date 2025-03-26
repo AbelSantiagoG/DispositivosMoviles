@@ -1,11 +1,12 @@
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
 import { ProductCard } from '../molecules/ProductCard';
 import { AddProductModal } from '../molecules/AddProductModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productoFormSchema, type ProductoFormData } from '../../validators/products';
+import { productService } from '../../lib/products';
 
 interface Product {
     id: string;
@@ -16,21 +17,43 @@ interface Product {
 
 interface ProductListProps {
     products: Product[];
+    refreshProducts: () => Promise<void>;
 }
 
-export function ProductList({ products }: ProductListProps) {
+export function ProductList({ products, refreshProducts }: ProductListProps) {
 
-    const { handleSubmit, setValue, control, formState: { errors } } = useForm<ProductoFormData>({
+    const { handleSubmit, setValue, control, formState: { errors }, reset } = useForm<ProductoFormData>({
         resolver: zodResolver(productoFormSchema)
     });
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    const onSubmit = (data: ProductoFormData) => {
-        console.log(data);
-        setModalVisible(false);
-        //alert('Pago exitoso');
-        //router.replace('/login');
+    const onSubmit = async (data: ProductoFormData) => {
+        try {
+            await productService.createProduct({
+                name: data.nombre,
+                description: data.descripcion,
+                status: "active",
+                stock: data.stock,
+                supplier_price: data.precio * 0.7, 
+                public_price: data.precio,
+                thumbnail: "",
+                bar_code: "",
+                minimal_safe_stock: 5,
+                discount: 0,
+                enterprise_id: 1, 
+                category_id: Number(data.categoria[0]) || 1,
+                supplier_id: 1 
+            });
+            
+            setModalVisible(false);
+            reset();
+            Alert.alert('Éxito', 'Producto creado correctamente');
+            refreshProducts();
+        } catch (error) {
+            console.error('Error al crear producto:', error);
+            Alert.alert('Error', 'No se pudo crear el producto');
+        }
     };
 
     const seleccionar = () => {

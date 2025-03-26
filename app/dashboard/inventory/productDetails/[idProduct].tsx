@@ -1,54 +1,129 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native'
-import React from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { View, Text, ScrollView, Image, TouchableOpacity, TextInput, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useLocalSearchParams, router } from 'expo-router'
 import { Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ProductoFormData, productoFormSchema } from '../../../../validators/products';
-import { router } from 'expo-router';
+import { productService } from '../../../../lib/products';
+import { categoriesService, CategorieData } from '../../../../lib/categories';
 
-const productDetails = () => {
-    const { idProduct } = useLocalSearchParams()
-
+const ProductDetails = () => {
+    const { idProduct } = useLocalSearchParams();
     const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [product, setProduct] = useState<any>(null);
+    const [categorias, setCategorias] = useState<CategorieData[]>([]);
 
-    const mockCategorias = [
-        { id: '1', nombre: 'Categoría 1' },
-        { id: '2', nombre: 'Categoría 2' },
-        { id: '3', nombre: 'Categoría 3' },
-        { id: '4', nombre: 'Categoría 4' },
-        { id: '5', nombre: 'Categoría 5' }
-    ];
-
-    const mockProveedores = [
-        { id: '1', nombre: 'Proveedor 1' },
-        { id: '2', nombre: 'Proveedor 2' },
-        { id: '3', nombre: 'Proveedor 3' },
-        { id: '4', nombre: 'Proveedor 4' },
-        { id: '5', nombre: 'Proveedor 5' }
-    ];
-
-    const { handleSubmit, setValue, control, formState: { errors } } = useForm<ProductoFormData>({
+    const { handleSubmit, setValue, control, formState: { errors }, reset } = useForm<ProductoFormData>({
         resolver: zodResolver(productoFormSchema)
     });
 
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const data = await productService.getProductById(Number(idProduct));
+                setProduct(data);
+                setValue('nombre', data.name);
+                setValue('descripcion', data.description);
+                setValue('precio', data.public_price);
+                setValue('stock', data.stock);
+                setValue('categoria', [data.category_id.toString()]);
+                setValue('proveedor', '1');
+            } catch (error) {
+                console.error('Error al obtener producto:', error);
+                Alert.alert('Error', 'No se pudo cargar el producto');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const onSubmit = (data: ProductoFormData) => {
-        console.log(data);
-        setModalVisible(false);
-        //router.replace('/login');
+        const fetchCategorias = async () => {
+            try {
+                const data = await categoriesService.getAllCategories();
+                setCategorias(data);
+            } catch (error) {
+                console.error('Error al obtener categorías:', error);
+            }
+        };
+
+        fetchProduct();
+        fetchCategorias();
+    }, [idProduct]);
+
+    const onSubmit = async (data: ProductoFormData) => {
+        try {
+            await productService.updateProduct(Number(idProduct), {
+                name: data.nombre,
+                description: data.descripcion,
+                stock: data.stock,
+                supplier_price: data.precio * 0.7,
+                public_price: data.precio,
+                category_id: Number(data.categoria[0]) || 1,
+                // Mantener los demás campos iguales
+                status: product.status,
+                thumbnail: product.thumbnail,
+                bar_code: product.bar_code,
+                minimal_safe_stock: product.minimal_safe_stock,
+                discount: product.discount,
+                enterprise_id: product.enterprise_id,
+                supplier_id: 1 
+            });
+            
+            setModalVisible(false);
+            Alert.alert('Éxito', 'Producto actualizado correctamente');
+            
+            const updatedProduct = await productService.getProductById(Number(idProduct));
+            setProduct(updatedProduct);
+        } catch (error) {
+            console.error('Error al actualizar producto:', error);
+            Alert.alert('Error', 'No se pudo actualizar el producto');
+        }
     };
 
-    const seleccionar = () => {
-        setModalVisible(true);
+    const handleDelete = async () => {
+        Alert.alert(
+            "Confirmar eliminación",
+            "¿Estás seguro de que deseas eliminar este producto?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { 
+                    text: "Eliminar", 
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await productService.deleteProduct(Number(idProduct));
+                            Alert.alert(
+                                'Éxito', 
+                                'Producto eliminado correctamente',
+                                [
+                                    { 
+                                        text: 'OK', 
+                                        onPress: () => {
+                                            router.replace('/dashboard/inventory/products');
+                                        }
+                                    }
+                                ]
+                            );
+                        } catch (error) {
+                            console.error('Error al eliminar producto:', error);
+                            Alert.alert('Error', 'No se pudo eliminar el producto');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
-    const onClose = () => {
-        setModalVisible(false);
+    if (loading) {
+        return (
+            <View className='h-full bg-black p-4 items-center justify-center'>
+                <Text className="text-white">Cargando producto...</Text>
+            </View>
+        );
     }
 
     return (
@@ -58,31 +133,38 @@ const productDetails = () => {
             </View>
             <View className='mt-4'>
                 <Text className="text-gray-400 text-sm mt-2 mb-1">ID: {idProduct}</Text>
-                <Text className="text-gray-400 text-sm mt-2 mb-1">Bebidas</Text>
-                <Text className="text-white font-semibold text-4xl">Coca-Cola</Text>
-                <Text className="text-white text-sm">$1.50</Text>
-                <Text className="text-white text-sm mt-3">Coca-Cola is a carbonated soft drink manufactured by The Coca-Cola Company.</Text>
-                <Text className="text-gray-400 text-sm mt-3 mb-4">Ver más detalles</Text>
+                <Text className="text-gray-400 text-sm mt-2 mb-1">
+                    {categorias.find(c => c.id === product.category_id)?.name || 'Categoría no disponible'}
+                </Text>
+                <Text className="text-white font-semibold text-4xl">{product.name}</Text>
+                <Text className="text-white text-sm">${product.public_price}</Text>
+                <Text className="text-white text-sm mt-3">{product.description}</Text>
+                <Text className="text-white text-sm mt-3">Stock: {product.stock} unidades</Text>
             </View>
-            <View className='flex-row  justify-between mb-7'>
-                <TouchableOpacity className=" bg-zinc-800 rounded-full p-4 mb-3 w-[48%] items-center" onPress={seleccionar}>
-                    <Text className="text-white font-semibold"> Actualizar</Text>
+            <View className='flex-row justify-between mb-7 mt-4'>
+                <TouchableOpacity 
+                    className="bg-zinc-800 rounded-full p-4 mb-3 w-[48%] items-center" 
+                    onPress={() => setModalVisible(true)}
+                >
+                    <Text className="text-white font-semibold">Actualizar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className=" bg-white rounded-full p-4 mb-3 w-[48%] items-center">
-                    <Text className="text-black font-semibold"> Eliminar </Text>
+                <TouchableOpacity 
+                    className="bg-red-600 rounded-full p-4 mb-3 w-[48%] items-center"
+                    onPress={handleDelete}
+                >
+                    <Text className="text-white font-semibold">Eliminar</Text>
                 </TouchableOpacity>
             </View>
-
 
             <Modal
                 isVisible={modalVisible}
-                onBackdropPress={onClose}
+                onBackdropPress={() => setModalVisible(false)}
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
                 style={{ margin: 0, justifyContent: 'flex-end' }}
             >
                 <View className="bg-zinc-700 p-6 rounded-t-3xl">
-                    <TouchableOpacity onPress={onClose} className="w-52 h-1 bg-white rounded-full self-center mb-4 " />
+                    <TouchableOpacity onPress={() => setModalVisible(false)} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
 
                     <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Actualizar Producto</Text>
 
@@ -91,7 +173,7 @@ const productDetails = () => {
                         name="nombre"
                         render={({ field: { onChange, value } }) => (
                             <TextInput
-                                className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
+                                className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-4"
                                 placeholder="Nombre del Producto"
                                 placeholderTextColor="#ccc"
                                 value={value}
@@ -105,7 +187,7 @@ const productDetails = () => {
                         name="descripcion"
                         render={({ field: { onChange, value } }) => (
                             <TextInput
-                                className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
+                                className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-4"
                                 placeholder="Descripción"
                                 placeholderTextColor="#ccc"
                                 value={value}
@@ -133,7 +215,7 @@ const productDetails = () => {
                             name="stock"
                             render={({ field: { onChange, value } }) => (
                                 <TextInput
-                                    className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-2 mr-4 flex-1"
+                                    className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-2 mr-4 flex-1"
                                     placeholder="Stock"
                                     placeholderTextColor="#ccc"
                                     keyboardType="numeric"
@@ -149,16 +231,16 @@ const productDetails = () => {
                         render={({ field: { onChange, value } }) => (
                             <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
                                 <Picker
-                                    selectedValue={value}
-                                    onValueChange={(itemValue) => onChange(itemValue)}
+                                    selectedValue={value && value.length > 0 ? value[0] : ''}
+                                    onValueChange={(itemValue) => onChange([itemValue])}
                                     style={{ color: 'white' }}
                                 >
                                     <Picker.Item label="Seleccione una categoría" value="" />
-                                    {mockCategorias.map((categoria) => (
+                                    {categorias.map((categoria) => (
                                         <Picker.Item
-                                            key={categoria.id}
-                                            label={categoria.nombre}
-                                            value={categoria.id}
+                                            key={categoria.id.toString()}
+                                            label={categoria.name}
+                                            value={categoria.id.toString()}
                                         />
                                     ))}
                                 </Picker>
@@ -166,36 +248,16 @@ const productDetails = () => {
                         )}
                     />
 
-                    <Controller
-                        control={control}
-                        name="proveedor"
-                        render={({ field: { onChange, value } }) => (
-                            <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
-                                <Picker
-                                    selectedValue={value}
-                                    onValueChange={(itemValue) => onChange(itemValue)}
-                                    style={{ color: 'white' }}
-                                >
-                                    <Picker.Item label="Seleccione un proveedor" value="" />
-                                    {mockProveedores.map((proveedor) => (
-                                        <Picker.Item
-                                            key={proveedor.id}
-                                            label={proveedor.nombre}
-                                            value={proveedor.id}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        )}
-                    />
-                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4" onPress={onClose}>
-                        <Text className="text-black font-semibold text-center text-xl">🖊 Editar Producto</Text>
+                    <TouchableOpacity 
+                        className="bg-white rounded-3xl p-5 mb-3 ml-4 mr-4" 
+                        onPress={handleSubmit(onSubmit)}
+                    >
+                        <Text className="text-black font-semibold text-center text-xl">🖊 Actualizar Producto</Text>
                     </TouchableOpacity>
-
                 </View>
             </Modal>
         </View>
     )
 }
 
-export default productDetails
+export default ProductDetails
