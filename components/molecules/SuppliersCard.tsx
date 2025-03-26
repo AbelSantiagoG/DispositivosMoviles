@@ -1,14 +1,14 @@
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { Link } from 'expo-router';
 
-interface EmployeesCardProps {
+interface SuppliersCardProps {
     name: string;
     telephone: string;
     image: ImageSourcePropType;
     href: string;
 }
 
-export function EmployeesCard({ name, telephone, image, href }: EmployeesCardProps) {
+export function SuppliersCard({ name, telephone, image, href }: SuppliersCardProps) {
     return (
         <Link href={href} asChild>
             <TouchableOpacity className="w-[48%] mb-9 items-center">

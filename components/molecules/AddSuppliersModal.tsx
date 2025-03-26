@@ -4,13 +4,14 @@ import Modal from 'react-native-modal';
 import { Control } from 'react-hook-form';
 import { Picker } from '@react-native-picker/picker';
 import { EmpleadoFormData } from '../../validators/employees';
+import { ProveedorFormData } from '../../validators/suppliers';
 
 
-interface AddEmployeesModalProps {
+interface AddSuppliersModalProps {
     isVisible: boolean;
     onClose: () => void;
     onSubmit: () => void;
-    control: Control<EmpleadoFormData>;
+    control: Control<ProveedorFormData>;
     errors: {};
 }
 
@@ -22,7 +23,7 @@ const mockEmpresas = [
     { id: '5', nombre: 'Empresa 5' }
 ];
 
-export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, errors }: AddEmployeesModalProps) {
+export function AddSuppliersModal({ isVisible, onClose, onSubmit, control, errors }: AddSuppliersModalProps) {
     return (
         <Modal
             isVisible={isVisible}
@@ -34,7 +35,7 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
             <View className="bg-zinc-700 p-6 rounded-t-3xl">
                 <TouchableOpacity onPress={onClose} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
 
-                <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Crear Empleado</Text>
+                <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Crear Proveedor</Text>
 
                 <Controller
                     control={control}
@@ -43,19 +44,6 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                         <TextInput
                             className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
                             placeholder="Nombre del empleado"
-                            placeholderTextColor="#ccc"
-                            value={value}
-                            onChangeText={onChange}
-                        />
-                    )}
-                />
-                <Controller
-                    control={control}
-                    name="apellido"
-                    render={({ field: { onChange, value } }) => (
-                        <TextInput
-                            className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
-                            placeholder="Apellido"
                             placeholderTextColor="#ccc"
                             value={value}
                             onChangeText={onChange}
@@ -81,7 +69,7 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
-                            placeholder="Teléfono"
+                            placeholder="Telefono"
                             placeholderTextColor="#ccc"
                             value={value}
                             onChangeText={onChange}
@@ -112,7 +100,7 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                 />
                 <View className="flex-row justify-between mt-4">
                     <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4 flex-1" onPress={onClose}>
-                        <Text className="text-black font-semibold text-center text-xl">➕ Agregar Empleado</Text>
+                        <Text className="text-black font-semibold text-center text-xl">➕ Agregar Proveedor</Text>
                     </TouchableOpacity>
                 </View>
             </View>

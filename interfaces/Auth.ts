@@ -35,6 +35,14 @@ export interface UserDAO {
     enterprise: EnterpriseDAO;
 }
 
+export interface SuppierDAO{
+    id: number;
+    name: string;
+    telephone: string;
+    email : string;
+    enterprise: EnterpriseDAO;
+}
+
 export interface AuthResponseDAO extends StandardResponseDAO {
     data: UserDAO;
     token?: string;

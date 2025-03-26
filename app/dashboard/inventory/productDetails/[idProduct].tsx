@@ -8,7 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ProductoFormData, productoFormSchema } from '../../../../validators/register';
+import { ProductoFormData, productoFormSchema } from '../../../../validators/products';
 import { router } from 'expo-router';
 
 const productDetails = () => {

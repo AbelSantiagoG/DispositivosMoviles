@@ -92,6 +92,12 @@ export function DashboardTabBar() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name='employeeDetails/[idEmployee]'
+                options={{
+                    href: null,
+                }}
+            />
         </Tabs>
     );
 } 
