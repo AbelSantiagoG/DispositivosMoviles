@@ -2,36 +2,27 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import { Control } from 'react-hook-form';
-import { ProductoFormData } from '../../validators/register';
 import { Picker } from '@react-native-picker/picker';
-import Feather from '@expo/vector-icons/Feather';
+import { EmpleadoFormData } from '../../validators/employees';
 
 
-interface AddProductModalProps {
+interface AddEmployeesModalProps {
     isVisible: boolean;
     onClose: () => void;
     onSubmit: () => void;
-    control: Control<ProductoFormData>;
+    control: Control<EmpleadoFormData>;
     errors: {};
 }
 
-export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, errors }: AddProductModalProps) {
-    const mockCategorias = [
-        { id: '1', nombre: 'Categoría 1' },
-        { id: '2', nombre: 'Categoría 2' },
-        { id: '3', nombre: 'Categoría 3' },
-        { id: '4', nombre: 'Categoría 4' },
-        { id: '5', nombre: 'Categoría 5' }
-    ];
+const mockEmpresas = [
+    { id: '1', nombre: 'Empresa 1' },
+    { id: '2', nombre: 'Empresa 2' },
+    { id: '3', nombre: 'Empresa 3' },
+    { id: '4', nombre: 'Empresa 4' },
+    { id: '5', nombre: 'Empresa 5' }
+];
 
-    const mockProveedores = [
-        { id: '1', nombre: 'Proveedor 1' },
-        { id: '2', nombre: 'Proveedor 2' },
-        { id: '3', nombre: 'Proveedor 3' },
-        { id: '4', nombre: 'Proveedor 4' },
-        { id: '5', nombre: 'Proveedor 5' }
-    ];
-
+export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, errors }: AddEmployeesModalProps) {
     return (
         <Modal
             isVisible={isVisible}
@@ -43,7 +34,7 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
             <View className="bg-zinc-700 p-6 rounded-t-3xl">
                 <TouchableOpacity onPress={onClose} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
 
-                <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Crear Producto</Text>
+                <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Crear Empleado</Text>
 
                 <Controller
                     control={control}
@@ -58,76 +49,48 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                         />
                     )}
                 />
-
                 <Controller
                     control={control}
-                    name="descripcion"
+                    name="apellido"
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
-                            placeholder="Descripción"
+                            placeholder="Apellido"
                             placeholderTextColor="#ccc"
                             value={value}
                             onChangeText={onChange}
                         />
                     )}
                 />
-                <View className="flex-row justify-between">
-                    <Controller
-                        control={control}
-                        name="precio"
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-2 flex-1"
-                                placeholder="Precio"
-                                placeholderTextColor="#ccc"
-                                keyboardType="numeric"
-                                value={value?.toString()}
-                                onChangeText={(text) => onChange(Number(text))}
-                            />
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="stock"
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-2 mr-4 flex-1"
-                                placeholder="Stock"
-                                placeholderTextColor="#ccc"
-                                keyboardType="numeric"
-                                value={value?.toString()}
-                                onChangeText={(text) => onChange(Number(text))}
-                            />
-                        )}
-                    />
-                </View>
                 <Controller
                     control={control}
-                    name="categoria"
+                    name="email"
                     render={({ field: { onChange, value } }) => (
-                        <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
-                            <Picker
-                                selectedValue={value}
-                                onValueChange={(itemValue) => onChange(itemValue)}
-                                style={{ color: 'white' }}
-                            >
-                                <Picker.Item label="Seleccione una categoría" value="" />
-                                {mockCategorias.map((categoria) => (
-                                    <Picker.Item
-                                        key={categoria.id}
-                                        label={categoria.nombre}
-                                        value={categoria.id}
-                                    />
-                                ))}
-                            </Picker>
-                        </View>
+                        <TextInput
+                            className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
+                            placeholder="Email"
+                            placeholderTextColor="#ccc"
+                            value={value}
+                            onChangeText={onChange}
+                        />
                     )}
                 />
-
                 <Controller
                     control={control}
-                    name="proveedor"
+                    name="telefono"
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
+                            placeholder="Teléfono"
+                            placeholderTextColor="#ccc"
+                            value={value}
+                            onChangeText={onChange}
+                        />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="empresa"
                     render={({ field: { onChange, value } }) => (
                         <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
                             <Picker
@@ -136,11 +99,11 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                                 style={{ color: 'white' }}
                             >
                                 <Picker.Item label="Seleccione un proveedor" value="" />
-                                {mockProveedores.map((proveedor) => (
+                                {mockEmpresas.map((empresa) => (
                                     <Picker.Item
-                                        key={proveedor.id}
-                                        label={proveedor.nombre}
-                                        value={proveedor.id}
+                                        key={empresa.id}
+                                        label={empresa.nombre}
+                                        value={empresa.id}
                                     />
                                 ))}
                             </Picker>
@@ -149,10 +112,7 @@ export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, error
                 />
                 <View className="flex-row justify-between mt-4">
                     <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4 flex-1" onPress={onClose}>
-                        <Text className="text-black font-semibold text-center text-xl">➕ Agregar Producto</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 mr-4 " >
-                        <Feather name="camera" size={24} color="black" />
+                        <Text className="text-black font-semibold text-center text-xl">➕ Agregar Empleado</Text>
                     </TouchableOpacity>
                 </View>
             </View>
