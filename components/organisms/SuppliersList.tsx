@@ -43,7 +43,7 @@ export function SuppliersList({ suppliers: initialSuppliers, listSuppliers }: Su
                 name: data.nombre,
                 phone_number: data.telefono,
                 email: data.email,
-                enterprise_id: Number(data.empresa)
+                enterprise_id: 1
             };
             
             console.log('Enviando datos para crear :', supplierData);
