@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
 import { Control } from 'react-hook-form';
-import { ProductoFormData } from '../../validators/products';
+import { ProductoFormData } from '../../validators/register';
 import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
 
@@ -15,7 +15,7 @@ interface AddProductModalProps {
     errors: {};
 }
 
-export function AddProductModal({ isVisible, onClose, onSubmit, control, errors }: AddProductModalProps) {
+export function AddEmployeesModal({ isVisible, onClose, onSubmit, control, errors }: AddProductModalProps) {
     const mockCategorias = [
         { id: '1', nombre: 'Categoría 1' },
         { id: '2', nombre: 'Categoría 2' },
