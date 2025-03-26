@@ -40,7 +40,7 @@ export function EmployeesList({ employees }: EmployeesListProps) {
                             key={employees.id}
                             name={employees.name}
                             telephone={employees.telephone}
-                            image={require('../../assets/images/employee.png')}
+                            image={require('../../assets/empleado.png')}
                             href={`/dashboard/inventory/productDetails/${employees.id}`}
                         />
                     ))}
