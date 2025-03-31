@@ -19,7 +19,7 @@ const ProductDetails = () => {
     const [categorias, setCategorias] = useState<CategorieData[]>([]);
 
     const { handleSubmit, setValue, control, formState: { errors }, reset } = useForm<ProductoFormData>({
-        resolver: zodResolver(productoFormSchema)
+        resolver: zodResolver(productoFormSchema)   
     });
 
     useEffect(() => {
