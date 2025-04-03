@@ -5,13 +5,14 @@ import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 
 import { Platform } from "react-native";
+import { notificationsService } from "../lib/notifications";
 
 export interface PushNotificationState {
     expoPushToken?: Notifications.ExpoPushToken;
     notification?: Notifications.Notification;
-    }
+}
 
-    export const usePushNotifications = (): PushNotificationState => {
+export const usePushNotifications = (): PushNotificationState => {
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
         shouldPlaySound: false,
@@ -68,7 +69,9 @@ export interface PushNotificationState {
 
     useEffect(() => {
         registerForPushNotificationsAsync().then((token) => {
-        setExpoPushToken(token);
+            setExpoPushToken(token);
+            // Ya no intentamos registrar el token aquí, lo haremos en el login
+            console.log('Token obtenido:', token?.data);
         });
 
         notificationListener.current =

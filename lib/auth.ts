@@ -1,5 +1,6 @@
 import api from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { notificationsService } from './notifications';
 
 export interface LoginCredentials {
     email: string;
@@ -45,8 +46,17 @@ export const authService = {
             console.log('Error al obtener la información del usuario:', error);
             return null;
         }
-        
-        
+    },
+
+    async registerPushToken(token: string) {
+        try {
+            const response = await notificationsService.registerToken(token);
+            console.log('Token de notificaciones registrado correctamente:', token);
+            return response;
+        } catch (error) {
+            console.error('Error al registrar el token de notificaciones:', error);
+            throw error;
+        }
     },
 
     async logout() {

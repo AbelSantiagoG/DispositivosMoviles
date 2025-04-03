@@ -6,9 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar'
 import { authService } from '../lib/auth';
+import { usePushNotifications } from "../hooks/usePushNotifications";
+import { useState } from "react";
 
 const Login = () => {
     const router = useRouter();
+    const { expoPushToken } = usePushNotifications();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const {
         control,
@@ -19,18 +24,31 @@ const Login = () => {
     });
 
     const onSubmit = async (data: loginFormData) => {
+        setIsLoading(true);
+        setError(null);
         try {
-            //await AsyncStorage.setItem('@infologin', JSON.stringify(data));
-            //console.log("Datos guardados en AsyncStorage:", data);
+            // Iniciar sesión
             const response = await authService.login({
                 email: data.email,
                 password: data.password
             });
-
+            
+            // Registrar el token de notificaciones push si está disponible
+            if (expoPushToken?.data) {
+                try {
+                    await authService.registerPushToken(expoPushToken.data);
+                } catch (err) {
+                    console.error('Error al registrar token de notificaciones:', err);
+                    // No bloqueamos el inicio de sesión si falla el registro del token
+                }
+            }
             
             router.replace('/dashboard');
         } catch (e) {
-            console.log('Error al guardar la información:', e);
+            console.error('Error al iniciar sesión:', e);
+            setError('Credenciales incorrectas o error de conexión');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -43,6 +61,10 @@ const Login = () => {
                         <Image className="w-full h-full" source={require("../assets/logo.png")} resizeMode="contain" />
                     </View>
 
+                    {error && (
+                        <Text className="text-red-500 mb-4 w-full text-center">{error}</Text>
+                    )}
+
                     <Controller
                         control={control}
                         name="email"
@@ -53,6 +75,8 @@ const Login = () => {
                                 placeholderTextColor="#888"
                                 onChangeText={onChange}
                                 value={value}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
                             />
                         )}
                     />
@@ -76,12 +100,18 @@ const Login = () => {
                 </View>
 
                 <View className="flex-1 justify-end w-full items-center mb-8">
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)} className="w-full bg-gray-500 p-4 rounded-full items-center mb-4">
-                        <Text className="text-white text-lg font-bold">Iniciar sesión</Text>
+                    <TouchableOpacity 
+                        onPress={handleSubmit(onSubmit)} 
+                        className={`w-full ${isLoading ? 'bg-gray-700' : 'bg-gray-500'} p-4 rounded-full items-center mb-4`}
+                        disabled={isLoading}
+                    >
+                        <Text className="text-white text-lg font-bold">
+                            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                        </Text>
                     </TouchableOpacity>
 
                     <Link href='/register' asChild>
-                        <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-full items-center mb-4">
+                        <TouchableOpacity className="w-full bg-gray-800 p-4 rounded-full items-center mb-4" disabled={isLoading}>
                             <Text className="text-white text-lg font-bold">Crear Cuenta</Text>
                         </TouchableOpacity>
                     </Link>

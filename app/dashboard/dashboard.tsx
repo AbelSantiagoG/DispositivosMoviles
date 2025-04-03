@@ -28,6 +28,12 @@ const Dashboard = () => {
             description: 'Procesamiento de ventas sin problemas.',
             icon: <FontAwesome5 name="store" size={20} color="white" />,
             href: '/dashboard/cashier/'
+        },
+        {
+            title: 'Notificaciones',
+            description: 'Envía notificaciones push a usuarios.',
+            icon: <FontAwesome5 name="bell" size={20} color="white" />,
+            href: '/dashboard/notifications'
         }
     ];
 

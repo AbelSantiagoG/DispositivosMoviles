@@ -18,6 +18,7 @@ const HomeLayout = () => {
   const [isConnected, setIsConnected] = React.useState<boolean | null>(null)
   const { expoPushToken, notification } = usePushNotifications()
 
+
   useEffect(() => {
     console.log('expoPushToken', expoPushToken)
     console.log("notificacion", notification)
@@ -27,29 +28,17 @@ const HomeLayout = () => {
     return () => {
       unsubscribe();
     }
-  }, [])
-
-  /* useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected as boolean)
-      if (!state.isConnected) {
-        router.replace('/no-connection')
-      }
-    })
-    return () => {
-      unsubscribe();
-    }
-  }, []) */
+  }, [expoPushToken, notification])
 
   return (
-    <Text selectable={true}>{expoPushToken?.data}</Text>
-    /* <Stack>
+    /*<Text selectable={true}>{expoPushToken?.data}</Text>*/
+    <Stack>
       <Stack.Screen name = "index" options= {{headerShown: false}}/>
       <Stack.Screen name = "dashboard" options= {{headerShown: false}}/>
       <Stack.Screen name = "login" options= {{headerShown: false}}/>
       <Stack.Screen name = "register" options= {{headerShown: false}}/>
       <Stack.Screen name = "no-connection" options= {{headerShown: false}}/>
-    </Stack> */
+    </Stack>
   )
 }
 
