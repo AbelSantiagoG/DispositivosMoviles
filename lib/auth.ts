@@ -13,38 +13,69 @@ export interface RegisterData extends LoginCredentials {
     telephone: string;
 }
 
+export interface UpdateProfileData {
+    name?: string;
+    lastname?: string;
+    telephone?: string;
+}
+
 export const authService = {
     async login(credentials: LoginCredentials) {
-        const formData = new FormData();
-        formData.append('username', credentials.email);
-        formData.append('password', credentials.password);
-        
-        const response = await api.post('/auth/login', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }        
-        });
-        if (response.data.access_token) {
-            //localStorage.setItem('token', response.data.access_token);
-            await AsyncStorage.setItem('@auth', response.data.access_token);
+        try {
+            const formData = new FormData();
+            formData.append('username', credentials.email);
+            formData.append('password', credentials.password);
+            
+            const response = await api.post('/auth/login', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }        
+            });
+            if (response.data.access_token) {
+                await AsyncStorage.setItem('@auth', response.data.access_token);
+            }
+            return response.data;
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+            throw error;
         }
-        //console.log(response);
-        return response.data;
     },
 
     async register(data: RegisterData) {
-        const response = await api.post('/employees', data);
-        return response.data;
+        try {
+            const response = await api.post('/employees', data);
+            return response.data;
+        } catch (error) {
+            console.error('Error al registrar usuario:', error);
+            throw error;
+        }
     },
 
     async getCurrentUser() {
         try {
             const response = await api.get('/employees/me');
-            console.log(response);
             return response.data;
         } catch (error) {
             console.log('Error al obtener la información del usuario:', error);
             return null;
+        }
+    },
+    
+    async updateUserProfile(data: UpdateProfileData) {
+        try {
+            // Primero obtenemos el usuario actual para tener su ID
+            const currentUser = await this.getCurrentUser();
+            if (!currentUser || !currentUser.id) {
+                throw new Error('No se pudo obtener la información del usuario actual');
+            }
+            
+            // Actualizamos el perfil utilizando el endpoint de employees
+            const response = await api.put(`/employees/${currentUser.id}`, data);
+            console.log('Perfil actualizado correctamente');
+            return response.data;
+        } catch (error) {
+            console.error('Error al actualizar el perfil del usuario:', error);
+            throw error;
         }
     },
 
@@ -60,6 +91,11 @@ export const authService = {
     },
 
     async logout() {
-        await AsyncStorage.removeItem('@auth');
+        try {
+            await AsyncStorage.removeItem('@auth');
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            throw error;
+        }
     }
 };

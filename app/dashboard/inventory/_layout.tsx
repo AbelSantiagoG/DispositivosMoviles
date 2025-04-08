@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import NetInfo from '@react-native-community/netinfo'
 import { ProtectedRoute } from "../../../context/ProtectedRoute";
+import { PERMISSIONS } from "../../../constants/permissions";
 
 
 const InventoryLayout = () => {
@@ -18,7 +19,7 @@ const InventoryLayout = () => {
   }, [])
 
   return (
-    <ProtectedRoute permissionName='GESTIONAR_INVENTARIO'>
+    <ProtectedRoute permissionName={PERMISSIONS.GESTIONAR_INVENTARIO}>
       <Stack screenOptions={{ headerStyle: { backgroundColor: 'black' }, headerTintColor: 'white' }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="categories" options={{ headerShown: true }} />

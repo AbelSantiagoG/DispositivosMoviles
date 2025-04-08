@@ -13,36 +13,71 @@ export interface EmployeeData {
 
 export const employeeService = {
     async getAllEmployees() {
-        const response = await api.get('/employees');
-        return response.data;
+        try {
+            const response = await api.get('/employees');
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener empleados:', error);
+            throw error; // Relanzamos el error para que el componente pueda manejarlo si es necesario
+        }
     },
 
     async getEmployeeById(id: number) {
-        const response = await api.get(`/employees/${id}`);
-        return response.data;
+        try {
+            const response = await api.get(`/employees/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al obtener empleado con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async createEmployee(data: EmployeeData) {
-        const response = await api.post('/employees', data);
-        return response.data;
+        try {
+            const response = await api.post('/employees', data);
+            return response.data;
+        } catch (error) {
+            console.error('Error al crear empleado:', error);
+            throw error;
+        }
     },
 
     async updateEmployee(id: number, data: Partial<EmployeeData>) {
-        const response = await api.put(`/employees/${id}`, data);
-        return response.data;
+        try {
+            const response = await api.put(`/employees/${id}`, data);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al actualizar empleado con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async deleteEmployee(id: number) {
-        await api.delete(`/employees/${id}`);
+        try {
+            await api.delete(`/employees/${id}`);
+        } catch (error) {
+            console.error(`Error al eliminar empleado con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async activateEmployee(id: number) {
-        const response = await api.patch(`/employees/${id}/activate`);
-        return response.data;
+        try {
+            const response = await api.patch(`/employees/${id}/activate`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al activar empleado con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async deactivateEmployee(id: number) {
-        const response = await api.patch(`/employees/${id}/deactivate`);
-        return response.data;
+        try {
+            const response = await api.patch(`/employees/${id}/deactivate`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al desactivar empleado con ID ${id}:`, error);
+            throw error;
+        }
     }
 };

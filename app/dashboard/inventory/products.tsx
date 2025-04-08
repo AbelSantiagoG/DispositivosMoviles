@@ -4,13 +4,18 @@ import { ProductList } from '../../../components/organisms/ProductList';
 import { useState, useEffect } from 'react';
 import { productService } from '../../../lib/products';
 import { ProtectedRoute } from '../../../context/ProtectedRoute';
+import { PERMISSIONS } from '../../../constants/permissions';
 
 const Products = () => {
     const router = useRouter();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const listProducts = async () => {
+        setLoading(true);
+        setError(null);
+        
         try {
             const data = await productService.getAllProducts();
             const formattedProducts = data.map(product => ({
@@ -21,7 +26,7 @@ const Products = () => {
             }));
             setProducts(formattedProducts);
         } catch (error) {
-            console.error('Error al obtener productos:', error);
+            setError('No se pudieron cargar los productos');
         } finally {
             setLoading(false);
         }
@@ -32,9 +37,11 @@ const Products = () => {
     }, []);
 
     return (
-        <ProtectedRoute permissionName="GESTIONAR_INVENTARIO">
+        <ProtectedRoute permissionName={PERMISSIONS.GESTIONAR_INVENTARIO}>
             {loading ? (
                 <Text className="text-white text-center mt-10">Cargando productos...</Text>
+            ) : error ? (
+                <Text className="text-red-500 text-center mt-10">{error}</Text>
             ) : (
                 <ProductList 
                     products={products}

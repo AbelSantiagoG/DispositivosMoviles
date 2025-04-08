@@ -10,26 +10,51 @@ export interface SupplierData {
 
 export const supplierService = {
     async getAllSuppliers() {
-        const response = await api.get('/suppliers');
-        return response.data;
+        try {
+            const response = await api.get('/suppliers');
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener proveedores:', error);
+            throw error;
+        }
     },
 
     async getSupplierById(id: number) {
-        const response = await api.get(`/suppliers/${id}`);
-        return response.data;
+        try {
+            const response = await api.get(`/suppliers/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al obtener proveedor con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async createSupplier(data: SupplierData) {
-        const response = await api.post('/suppliers', data);
-        return response.data;
+        try {
+            const response = await api.post('/suppliers', data);
+            return response.data;
+        } catch (error) {
+            console.error('Error al crear proveedor:', error);
+            throw error;
+        }
     },
 
     async updateSupplier(id: number, data: Partial<SupplierData>) {
-        const response = await api.put(`/suppliers/${id}`, data);
-        return response.data;
+        try {
+            const response = await api.put(`/suppliers/${id}`, data);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al actualizar proveedor con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async deleteSupplier(id: number) {
-        await api.delete(`/suppliers/${id}`);
+        try {
+            await api.delete(`/suppliers/${id}`);
+        } catch (error) {
+            console.error(`Error al eliminar proveedor con ID ${id}:`, error);
+            throw error;
+        }
     }
 };

@@ -26,27 +26,24 @@ const Login = () => {
     const onSubmit = async (data: loginFormData) => {
         setIsLoading(true);
         setError(null);
+        
         try {
-            // Iniciar sesión
-            const response = await authService.login({
+            await authService.login({
                 email: data.email,
                 password: data.password
             });
             
-            // Registrar el token de notificaciones push si está disponible
             if (expoPushToken?.data) {
                 try {
                     await authService.registerPushToken(expoPushToken.data);
                 } catch (err) {
                     console.error('Error al registrar token de notificaciones:', err);
-                    // No bloqueamos el inicio de sesión si falla el registro del token
                 }
             }
             
             router.replace('/dashboard');
         } catch (e) {
-            console.error('Error al iniciar sesión:', e);
-            setError('Credenciales incorrectas o error de conexión');
+            setError('Credenciales incorrectas ');
         } finally {
             setIsLoading(false);
         }

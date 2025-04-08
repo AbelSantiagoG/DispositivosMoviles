@@ -1,18 +1,18 @@
-import { useContext,useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { useContext } from 'react';
+import { useAuth } from './AuthContext';
+import { Text } from 'react-native';
+import { hasPermission } from '../utils/permissionsUtils';
+import { PERMISSIONS } from '../constants/permissions';
 
-export const ProtectedRoute = ({ children, permissionName }: { children: JSX.Element, permissionName: string }) => {
+interface ProtectedRouteProps {
+  children: JSX.Element;
+  permissionName: string;
+}
+
+export const ProtectedRoute = ({ children, permissionName }: ProtectedRouteProps) => {
     const { user } = useAuth();
 
-    // Verificar si el usuario tiene un permiso específico
-    const hasPermission = (permissionName: string) => {
-        if (!user || !user.role || !user.role.permissions) return false;
-        return user.role.permissions.some(permission => permission.name === permissionName);
-    };
-    
-
-    if (hasPermission(permissionName) === false) {
+    if (hasPermission(user, permissionName) === false) {
         return <Text>No tienes acceso.</Text>;
     }
 

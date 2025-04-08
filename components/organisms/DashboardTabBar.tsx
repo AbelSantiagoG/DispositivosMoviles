@@ -2,23 +2,19 @@ import { Tabs } from 'expo-router';
 import { AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useMemo } from 'react';
+import { hasPermission } from '../../utils/permissionsUtils';
+import { PERMISSIONS } from '../../constants/permissions';
 
 export function DashboardTabBar() {
     const { user } = useAuth();
     
-    // Verificar si el usuario tiene un permiso específico
-    const hasPermission = (permissionName: string) => {
-        if (!user || !user.role || !user.role.permissions) return false;
-        return user.role.permissions.some(permission => permission.name === permissionName);
-    };
-    
     // Calcular los permisos una sola vez
     const permissions = useMemo(() => {
         return {
-            inventory: hasPermission('GESTIONAR_INVENTARIO'),
-            employees: hasPermission('GESTIONAR_EMPLEADOS'),
-            reports: hasPermission('VER_REPORTES'),
-            cashier: hasPermission('GESTIONAR_VENTAS')
+            inventory: hasPermission(user, PERMISSIONS.GESTIONAR_INVENTARIO),
+            employees: hasPermission(user, PERMISSIONS.GESTIONAR_EMPLEADOS),
+            reports: hasPermission(user, PERMISSIONS.VER_REPORTES),
+            cashier: hasPermission(user, PERMISSIONS.GESTIONAR_VENTAS)
         };
     }, [user]);
     
@@ -97,6 +93,16 @@ export function DashboardTabBar() {
                 options={{
                     href: null,
                 }}
+            />
+
+            <Tabs.Screen
+                name='notifications'
+                options={{
+                    tabBarIcon:({color}) =>(
+                        <AntDesign name="notification" size={20} color={color} />
+                    )
+                }
+                }
             />
         </Tabs>
     );

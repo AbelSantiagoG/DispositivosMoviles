@@ -7,7 +7,7 @@ import { safeAreaContainer } from '../Tokens';
 
 export function DashboardLayout() {
     return (
-        <SafeAreaView className={safeAreaContainer}>
+        <SafeAreaView className={safeAreaContainer} style={{ paddingTop: 0 }}>
             <DashboardHeader/>
             <View className="flex-1">
                 <DashboardTabBar />

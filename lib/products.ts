@@ -18,31 +18,61 @@ export interface ProductData {
 
 export const productService = {
     async getAllProducts() {
-        const response = await api.get('/products');
-        return response.data;
+        try {
+            const response = await api.get('/products');
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener productos:', error);
+            throw error;
+        }
     },
 
     async getProductById(id: number) {
-        const response = await api.get(`/products/${id}`);
-        return response.data;
+        try {
+            const response = await api.get(`/products/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al obtener producto con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async getProductsByCategory(categoryId: number) {
-        const response = await api.get(`/products/category/${categoryId}`);
-        return response.data;
+        try {
+            const response = await api.get(`/products/category/${categoryId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al obtener productos de la categoría ${categoryId}:`, error);
+            throw error;
+        }
     },
 
     async createProduct(data: ProductData) {
-        const response = await api.post('/products', data);
-        return response.data;
+        try {
+            const response = await api.post('/products', data);
+            return response.data;
+        } catch (error) {
+            console.error('Error al crear producto:', error);
+            throw error;
+        }
     },
 
     async updateProduct(id: number, data: Partial<ProductData>) {
-        const response = await api.put(`/products/${id}`, data);
-        return response.data;
+        try {
+            const response = await api.put(`/products/${id}`, data);
+            return response.data;
+        } catch (error) {
+            console.error(`Error al actualizar producto con ID ${id}:`, error);
+            throw error;
+        }
     },
 
     async deleteProduct(id: number) {
-        await api.delete(`/products/${id}`);
+        try {
+            await api.delete(`/products/${id}`);
+        } catch (error) {
+            console.error(`Error al eliminar producto con ID ${id}:`, error);
+            throw error;
+        }
     }
 };
