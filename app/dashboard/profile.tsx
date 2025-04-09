@@ -6,6 +6,7 @@ import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { authService, UpdateProfileData } from '../../lib/auth';
 import { useRouter } from "expo-router";
 import { useAuth } from '../../context/AuthContext';
+import Toast from "react-native-toast-message";
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('user');
@@ -23,6 +24,11 @@ const Profile = () => {
   const [enterpriseName, setEnterpriseName] = useState('');
   const [enterpriseNIT, setEnterpriseNIT] = useState('');
   const [enterpriseTelephone, setEnterpriseTelephone] = useState('');
+  
+  // Estados para los errores de validación
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [lastnameError, setLastnameError] = useState<string | null>(null);
+  const [telephoneError, setTelephoneError] = useState<string | null>(null);
 
   // Inicializar los valores de los campos
   useEffect(() => {
@@ -46,11 +52,75 @@ const Profile = () => {
     router.replace('/login');
   }
 
+  // Validaciones de campos
+  const validateUserFields = () => {
+    // Resetear errores
+    setNameError(null);
+    setLastnameError(null);
+    setTelephoneError(null);
+    
+    let isValid = true;
+    
+    // Validar nombre
+    if (name.trim() !== '' && name.trim().length < 2) {
+      const errorMsg = 'El nombre debe tener al menos 2 caracteres';
+      setNameError(errorMsg);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error de validación',
+        text2: errorMsg,
+        visibilityTime: 3000,
+      });
+      isValid = false;
+    }
+
+    // Validar apellido
+    if (lastname.trim() !== '' && lastname.trim().length < 2) {
+      const errorMsg = 'El apellido debe tener al menos 2 caracteres';
+      setLastnameError(errorMsg);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error de validación',
+        text2: errorMsg,
+        visibilityTime: 3000,
+      });
+      isValid = false;
+    }
+
+    // Validar teléfono
+    if (telephone.trim() !== '') {
+      // Verificar que sea numérico y tenga longitud adecuada
+      const phoneRegex = /^\d{7,15}$/;
+      if (!phoneRegex.test(telephone.trim())) {
+        const errorMsg = 'El teléfono debe contener solo números y tener entre 7 y 15 dígitos';
+        setTelephoneError(errorMsg);
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: 'Error de validación',
+          text2: errorMsg,
+          visibilityTime: 3000,
+        });
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  };
+
   const updateUserProfile = async () => {
     setIsUpdating(true);
     setError(null);
     
     try {
+      // Validar los campos antes de enviar
+      if (!validateUserFields()) {
+        setIsUpdating(false);
+        return;
+      }
+
       // Solo enviamos los campos que no estén vacíos
       const updateData: UpdateProfileData = {};
       
@@ -60,7 +130,13 @@ const Profile = () => {
       
       // Verificar si hay al menos un campo para actualizar
       if (Object.keys(updateData).length === 0) {
-        Alert.alert("Información", "No hay cambios para actualizar");
+        Toast.show({
+          type: 'info',
+          position: 'bottom',
+          text1: 'Información',
+          text2: 'No hay cambios para actualizar',
+          visibilityTime: 3000,
+        });
         setIsUpdating(false);
         return;
       }
@@ -74,20 +150,71 @@ const Profile = () => {
         const refreshedUser = await authService.getCurrentUser();
         if (refreshedUser) {
           setUser(refreshedUser);
-          Alert.alert("Éxito", "Perfil actualizado correctamente");
+          Toast.show({
+            type: 'success',
+            position: 'bottom',
+            text1: 'Éxito',
+            text2: 'Perfil actualizado correctamente',
+            visibilityTime: 3000,
+          });
         }
       }
     } catch (error) {
       console.error('Error al actualizar perfil:', error);
       setError('No se pudo actualizar el perfil');
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Error',
+        text2: 'No se pudo actualizar el perfil',
+        visibilityTime: 3000,
+      });
     } finally {
       setIsUpdating(false);
     }
   };
 
-  // Por ahora la actualización de la empresa no está implementada
+
   const updateEnterpriseProfile = () => {
-    Alert.alert("Información", "La actualización de datos de la empresa aún no está disponible");
+    Toast.show({
+      type: 'info',
+      position: 'bottom',
+      text1: 'Información',
+      text2: 'La actualización de datos de la empresa aún no está disponible',
+      visibilityTime: 3000,
+    });
+  };
+
+
+  const validateOnBlur = (field: 'name' | 'lastname' | 'telephone') => {
+    switch (field) {
+      case 'name':
+        if (name.trim() !== '' && name.trim().length < 2) {
+          setNameError('El nombre debe tener al menos 2 caracteres');
+        } else {
+          setNameError(null);
+        }
+        break;
+      case 'lastname':
+        if (lastname.trim() !== '' && lastname.trim().length < 2) {
+          setLastnameError('El apellido debe tener al menos 2 caracteres');
+        } else {
+          setLastnameError(null);
+        }
+        break;
+      case 'telephone':
+        if (telephone.trim() !== '') {
+          const phoneRegex = /^\d{7,15}$/;
+          if (!phoneRegex.test(telephone.trim())) {
+            setTelephoneError('El teléfono debe contener solo números y tener entre 7 y 15 dígitos');
+          } else {
+            setTelephoneError(null);
+          }
+        } else {
+          setTelephoneError(null);
+        }
+        break;
+    }
   };
 
   return (
@@ -124,33 +251,48 @@ const Profile = () => {
             <View>
               <Text className="text-white mb-2 ">Nombre</Text>
               <TextInput
-                className="bg-white text-black p-1 rounded-sm mb-2"
+                className={`bg-white text-black p-1 rounded-sm mb-1 ${nameError ? 'border-2 border-red-500' : ''}`}
                 placeholder={user?.name}
                 placeholderTextColor="#888"
                 value={name}
-                onChangeText={setName}
+                onChangeText={(text) => {
+                  setName(text);
+                  if (nameError) validateOnBlur('name');
+                }}
+                onBlur={() => validateOnBlur('name')}
               />
+              {nameError && <Text className="text-red-500 text-xs mb-2">{nameError}</Text>}
             </View>
             <View>
               <Text className="text-white mb-2 ">Apellido</Text>
               <TextInput
-                className="bg-white text-black p-1 rounded-sm mb-2"
+                className={`bg-white text-black p-1 rounded-sm mb-1 ${lastnameError ? 'border-2 border-red-500' : ''}`}
                 placeholder={user?.lastname}
                 placeholderTextColor="#888"
                 value={lastname}
-                onChangeText={setLastname}
+                onChangeText={(text) => {
+                  setLastname(text);
+                  if (lastnameError) validateOnBlur('lastname');
+                }}
+                onBlur={() => validateOnBlur('lastname')}
               />
+              {lastnameError && <Text className="text-red-500 text-xs mb-2">{lastnameError}</Text>}
             </View>
             <View>
               <Text className="text-white mb-2 ">Teléfono</Text>
               <TextInput
-                className="bg-white text-black p-1 rounded-sm"
+                className={`bg-white text-black p-1 rounded-sm mb-1 ${telephoneError ? 'border-2 border-red-500' : ''}`}
                 placeholder={user?.telephone}
                 placeholderTextColor="#888"
                 value={telephone}
-                onChangeText={setTelephone}
+                onChangeText={(text) => {
+                  setTelephone(text);
+                  if (telephoneError) validateOnBlur('telephone');
+                }}
+                onBlur={() => validateOnBlur('telephone')}
                 keyboardType="phone-pad"
               />
+              {telephoneError && <Text className="text-red-500 text-xs">{telephoneError}</Text>}
             </View>
           </View>
           <View className="flex-row justify-end mt-5">
@@ -233,6 +375,8 @@ const Profile = () => {
           <Text className="text-white font-bold text-lg">Cerrar sesión</Text>
         </View>
       </TouchableOpacity>
+      
+      <Toast />
     </ScrollView>
   );
 };
