@@ -112,9 +112,11 @@ const Login = () => {
                             <Text className="text-white text-lg font-bold">Crear Cuenta</Text>
                         </TouchableOpacity>
                     </Link>
-                    <TouchableOpacity>
-                        <Text className="text-gray-500 mt-2 text-sm">Olvidé mi contraseña</Text>
-                    </TouchableOpacity>
+                    <Link href='/forgot-password' asChild>
+                        <TouchableOpacity>
+                            <Text className="text-gray-500 mt-2 text-sm">Olvidé mi contraseña</Text>
+                        </TouchableOpacity>
+                    </Link>
                 </View>
             </View>
         </View>

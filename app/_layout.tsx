@@ -11,6 +11,7 @@ import "../global.css"
 import { AuthProvider } from '../context/AuthContext';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { Text } from 'react-native';
+import Toast from 'react-native-toast-message'
 
 const HomeLayout = () => {
   //const [isConnected, setIsConnected] = useState(false)
@@ -32,13 +33,18 @@ const HomeLayout = () => {
 
   return (
     /*<Text selectable={true}>{expoPushToken?.data}</Text>*/
+    <>
     <Stack>
-      <Stack.Screen name = "index" options= {{headerShown: false}}/>
-      <Stack.Screen name = "dashboard" options= {{headerShown: false}}/>
-      <Stack.Screen name = "login" options= {{headerShown: false}}/>
-      <Stack.Screen name = "register" options= {{headerShown: false}}/>
-      <Stack.Screen name = "no-connection" options= {{headerShown: false}}/>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="dashboard" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
+      <Stack.Screen name="no-connection" options={{ headerShown: false }} />
+      <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
     </Stack>
+
+    <Toast /> 
+  </>
   )
 }
 
