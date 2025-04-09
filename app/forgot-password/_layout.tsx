@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
+import { PublicRoute } from '../../context/PublicRoute';
 
-export default function ForgotPasswordLayout() {
+const ForgotPasswordLayoutContent = () => {
     return (
         <Stack
             screenOptions={{
@@ -20,5 +21,13 @@ export default function ForgotPasswordLayout() {
                 }}
             />
         </Stack>
+    );
+};
+
+export default function ForgotPasswordLayout() {
+    return (
+        <PublicRoute>
+            <ForgotPasswordLayoutContent />
+        </PublicRoute>
     );
 } 

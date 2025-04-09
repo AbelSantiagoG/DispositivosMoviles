@@ -2,8 +2,9 @@ import { Stack } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
+import { PublicRoute } from '../../context/PublicRoute';
 
-export default function RegisterLayout() {
+const RegisterLayoutContent = () => {
     return (
         <SafeAreaView className="flex-1 bg-black">
             <View className=" items-center justify-center mt-10">
@@ -20,5 +21,13 @@ export default function RegisterLayout() {
                 <Stack.Screen name="plan" />
             </Stack>
         </SafeAreaView>
+    );
+};
+
+export default function RegisterLayout() {
+    return (
+        <PublicRoute>
+            <RegisterLayoutContent />
+        </PublicRoute>
     );
 }

@@ -10,6 +10,7 @@ import { usePushNotifications } from "../hooks/usePushNotifications";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons';
+import { PublicRoute } from '../context/PublicRoute';
 
 const Login = () => {
     const router = useRouter();
@@ -157,4 +158,12 @@ const Login = () => {
     );
 };
 
-export default Login;
+const LoginPage = () => {
+    return (
+        <PublicRoute>
+            <Login />
+        </PublicRoute>
+    );
+};
+
+export default LoginPage;
