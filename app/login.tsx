@@ -8,12 +8,15 @@ import { StatusBar } from 'expo-status-bar'
 import { authService } from '../lib/auth';
 import { usePushNotifications } from "../hooks/usePushNotifications";
 import { useState } from "react";
+import Toast from "react-native-toast-message";
+import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {
     const router = useRouter();
     const { expoPushToken } = usePushNotifications();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const {
         control,
@@ -25,7 +28,6 @@ const Login = () => {
 
     const onSubmit = async (data: loginFormData) => {
         setIsLoading(true);
-        setError(null);
         
         try {
             await authService.login({
@@ -40,10 +42,18 @@ const Login = () => {
                     console.error('Error al registrar token de notificaciones:', err);
                 }
             }
-            
+            Toast.show({
+                type: 'success',
+                text1: 'Éxito',
+                text2: 'Inicio de sesión exitoso',
+            });
             router.replace('/dashboard');
         } catch (e) {
-            setError('Credenciales incorrectas ');
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Credenciales incorrectas',
+            });
         } finally {
             setIsLoading(false);
         }
@@ -58,42 +68,66 @@ const Login = () => {
                         <Image className="w-full h-full" source={require("../assets/logo.png")} resizeMode="contain" />
                     </View>
 
-                    {error && (
-                        <Text className="text-red-500 mb-4 w-full text-center">{error}</Text>
-                    )}
+                    
 
                     <Controller
                         control={control}
                         name="email"
                         render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="w-full bg-neutral-800 text-white p-4 rounded-2xl mb-2"
-                                placeholder="Correo electrónico"
-                                placeholderTextColor="#888"
-                                onChangeText={onChange}
-                                value={value}
-                                autoCapitalize="none"
-                                keyboardType="email-address"
-                            />
+                            <View className="w-full mb-2">
+                                <TextInput
+                                    className="w-full bg-neutral-800 text-white p-4 rounded-2xl"
+                                    placeholder="Correo electrónico"
+                                    placeholderTextColor="#888"
+                                    onChangeText={onChange}
+                                    value={value}
+                                    autoCapitalize="none"
+                                    keyboardType="email-address"
+                                    maxLength={100}
+                                />
+                                {errors.email && (
+                                    <Text className="text-red-500 text-sm mt-1 ml-2">
+                                        {errors.email.message}
+                                    </Text>
+                                )}
+                            </View>
                         )}
                     />
-                    {errors.email && <Text className="text-red-500">{errors.email.message}</Text>}
 
                     <Controller
                         control={control}
                         name="password"
                         render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="w-full bg-neutral-800 text-white p-4 rounded-2xl mb-2"
-                                placeholder="Contraseña"
-                                placeholderTextColor="#888"
-                                secureTextEntry
-                                onChangeText={onChange}
-                                value={value}
-                            />
+                            <View className="w-full mb-2">
+                                <View className="relative">
+                                    <TextInput
+                                        className="w-full bg-neutral-800 text-white p-4 rounded-2xl pr-12"
+                                        placeholder="Contraseña"
+                                        placeholderTextColor="#888"
+                                        secureTextEntry={!showPassword}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        maxLength={50}
+                                    />
+                                    <TouchableOpacity 
+                                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                                        onPress={() => setShowPassword(!showPassword)}
+                                    >
+                                        <Ionicons 
+                                            name={showPassword ? "eye-off" : "eye"} 
+                                            size={24} 
+                                            color="#888" 
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                                {errors.password && (
+                                    <Text className="text-red-500 text-sm mt-1 ml-2">
+                                        {errors.password.message}
+                                    </Text>
+                                )}
+                            </View>
                         )}
                     />
-                    {errors.password && <Text className="text-red-500">{errors.password.message}</Text>}
                 </View>
 
                 <View className="flex-1 justify-end w-full items-center mb-8">
