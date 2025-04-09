@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from "react";
 import { authService } from '../../lib/auth';
 import Toast from 'react-native-toast-message';
+import FormErrorMessage from "../../components/atoms/FormErrorMessage";
 
 const forgotPasswordSchema = z.object({
     email: z.string()
@@ -87,9 +88,7 @@ const ForgotPassword = () => {
                                     maxLength={50}
                                 />
                                 {errors.email && (
-                                    <Text className="text-red-500 text-sm mt-1 ml-2">
-                                        {errors.email.message}
-                                    </Text>
+                                    <FormErrorMessage message={errors.email?.message} />
                                 )}
                             </View>
                         )}

@@ -3,7 +3,6 @@ import { Link, useRouter } from "expo-router";
 import { loginFormSchema, loginFormData } from "../validators/login";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar'
 import { authService } from '../lib/auth';
 import { usePushNotifications } from "../hooks/usePushNotifications";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { Ionicons } from '@expo/vector-icons';
 import { PublicRoute } from '../context/PublicRoute';
+import FormErrorMessage from '../components/atoms/FormErrorMessage';
 
 const Login = () => {
     const router = useRouter();
@@ -87,9 +87,7 @@ const Login = () => {
                                     maxLength={100}
                                 />
                                 {errors.email && (
-                                    <Text className="text-red-500 text-sm mt-1 ml-2">
-                                        {errors.email.message}
-                                    </Text>
+                                    <FormErrorMessage message={errors.email?.message} />
                                 )}
                             </View>
                         )}
@@ -99,7 +97,7 @@ const Login = () => {
                         control={control}
                         name="password"
                         render={({ field: { onChange, value } }) => (
-                            <View className="w-full mb-2">
+                            <View className="w-full mb-2 mt-1">
                                 <View className="relative">
                                     <TextInput
                                         className="w-full bg-neutral-800 text-white p-4 rounded-2xl pr-12"
@@ -122,10 +120,9 @@ const Login = () => {
                                     </TouchableOpacity>
                                 </View>
                                 {errors.password && (
-                                    <Text className="text-red-500 text-sm mt-1 ml-2">
-                                        {errors.password.message}
-                                    </Text>
+                                    <FormErrorMessage message={errors.password?.message} />
                                 )}
+
                             </View>
                         )}
                     />

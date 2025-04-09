@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { StatusBar } from 'expo-status-bar';
 import { authService } from '../../../lib/auth';
 import { useState } from "react";
+import FormErrorMessage from "../../../components/atoms/FormErrorMessage";
 
 const verifyCodeSchema = z.object({
     code: z.string()
@@ -85,9 +86,7 @@ const VerifyCode = () => {
                                     maxLength={4}
                                 />
                                 {errors.code && (
-                                    <Text className="text-red-500 text-sm mt-1 ml-2">
-                                        {errors.code.message}
-                                    </Text>
+                                    <FormErrorMessage message={errors.code?.message} />
                                 )}
                             </View>
                         )}
@@ -108,9 +107,7 @@ const VerifyCode = () => {
                                     maxLength={50}
                                 />
                                 {errors.password && (
-                                    <Text className="text-red-500 text-sm mt-1 ml-2">
-                                        {errors.password.message}
-                                    </Text>
+                                    <FormErrorMessage message={errors.password?.message} />
                                 )}
                             </View>
                         )}
