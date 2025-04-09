@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StatusBar } from 'expo-status-bar';
 import { useState } from "react";
+import { authService } from '../../lib/auth';
 import Toast from 'react-native-toast-message';
 
 const forgotPasswordSchema = z.object({
@@ -35,15 +36,13 @@ const ForgotPassword = () => {
         setError(null);
         
         try {
-            // TODO: Implement password reset logic here
-            // For now, we'll just simulate a successful request
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await authService.sendRecoveryEmail(data.email);
             Toast.show({
                 type: 'success',
                 text1: '¡Éxito!',
                 text2: 'Te enviamos un correo con instrucciones.',
             });
-            router.push('/forgot-password/verify-code');
+            router.push(`/forgot-password/verify-code/${encodeURIComponent(data.email)}`);
         } catch (e) {
             Toast.show({
                 type: 'error',

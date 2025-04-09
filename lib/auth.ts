@@ -97,5 +97,29 @@ export const authService = {
             console.error('Error al cerrar sesión:', error);
             throw error;
         }
+    },
+
+    async sendRecoveryEmail(email: string) {
+        try {
+            const response = api.post(`/auth/password-recovery/${email}`);
+            return response;
+        } catch (error) {
+            console.log('Error al enviar el correo de recuperación de contraseña: ', error);
+            throw error;
+        }
+    },
+
+    async resetPassword(email: string, token: string, new_password: string) {
+        try {
+            const response = api.post(`auth/reset-password`, {
+                email,
+                token,
+                new_password
+            });
+            return response;
+        } catch (error) {
+            console.log('Error al reiniciar la contraseña: ', error);
+            throw error;
+        }
     }
 };
