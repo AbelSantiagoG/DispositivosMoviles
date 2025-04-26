@@ -6,7 +6,8 @@ export function Logo() {
         <Image 
             className={logo} 
             source={require("../../assets/logo.png")} 
-            resizeMode="contain" 
+            resizeMode="contain"
+            testID="logo-image" 
         />
     );
 } 

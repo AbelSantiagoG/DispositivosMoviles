@@ -8,7 +8,7 @@ interface CustomButtonProps {
 
 const CustomButton = ({ color, text, actionFunction }: CustomButtonProps) => {
   return (
-    <Pressable className=''>
+    <Pressable className='' onPress={actionFunction}>
       <Text>CustomButton</Text>
     </Pressable>
   )
