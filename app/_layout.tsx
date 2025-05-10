@@ -1,10 +1,4 @@
-/* import { Stack, router } from "expo-router";
-import { useEffect, useState } from "react";
-import NetInfo from '@react-native-community/netinfo'
-
-import "../global.css"; */
-
-import React, { useEffect, createContext } from 'react'
+import React, { useEffect, createContext, Suspense } from 'react'
 import NetInfo from '@react-native-community/netinfo'
 import { Stack } from 'expo-router'
 import "../global.css"
@@ -12,6 +6,14 @@ import { AuthProvider } from '../context/AuthContext';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { Text, View } from 'react-native';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
+import { ActivityIndicator } from 'react-native';
+import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
+import migrations from '../drizzle/migrations';
+import { addDummyData } from '../db/addDummyData';
+
+export const DATABASE_NAME = 'tasks'
 
 const HomeLayout = () => {
   //const [isConnected, setIsConnected] = useState(false)
@@ -19,6 +21,9 @@ const HomeLayout = () => {
   const [isConnected, setIsConnected] = React.useState<boolean | null>(null)
   const { expoPushToken, notification } = usePushNotifications()
 
+  const expoDB = openDatabaseSync(DATABASE_NAME)
+  const db = drizzle(expoDB)
+  const { success, error } = useMigrations(db, migrations)
 
   const toastConfig = {
     success: (props: any) => (
@@ -50,7 +55,12 @@ const HomeLayout = () => {
     ),
   };
 
+  
+
   useEffect(() => {
+    if(success){
+      addDummyData(db)
+    }
     console.log('expoPushToken', expoPushToken)
     console.log("notificacion", notification)
     const unsubscribe = NetInfo.addEventListener(state => {

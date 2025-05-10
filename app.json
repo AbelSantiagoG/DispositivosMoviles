@@ -32,6 +32,9 @@
         "projectId": "2452ac79-d021-4942-a31a-d596fb66d0f7"
       }
     },
-    "owner": "abelardo4"
+    "owner": "abelardo4",
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }
