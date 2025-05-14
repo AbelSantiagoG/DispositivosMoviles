@@ -12,8 +12,9 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import migrations from '../drizzle/migrations';
 import { addDummyData } from '../db/addDummyData';
+import { DatabaseProvider } from '../context/DatabaseContext';
 
-export const DATABASE_NAME = 'tasks'
+export const DATABASE_NAME = 'posdb'
 
 const HomeLayout = () => {
   //const [isConnected, setIsConnected] = useState(false)
@@ -73,18 +74,20 @@ const HomeLayout = () => {
 
   return (
     /*<Text selectable={true}>{expoPushToken?.data}</Text>*/
-    <>
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="dashboard" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="register" options={{ headerShown: false }} />
-      <Stack.Screen name="no-connection" options={{ headerShown: false }} />
-      <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
-    </Stack>
+    <SQLiteProvider databaseName={DATABASE_NAME}>
+      <DatabaseProvider db={expoDB}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="dashboard" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="register" options={{ headerShown: false }} />
+          <Stack.Screen name="no-connection" options={{ headerShown: false }} />
+          <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+        </Stack>
 
-    <Toast config={toastConfig} /> 
-    </>
+        <Toast config={toastConfig} /> 
+      </DatabaseProvider>
+    </SQLiteProvider>
   )
 }
 
