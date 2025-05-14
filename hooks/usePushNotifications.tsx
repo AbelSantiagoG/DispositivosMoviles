@@ -18,6 +18,8 @@ export const usePushNotifications = (): PushNotificationState => {
         shouldPlaySound: false,
         shouldShowAlert: true,
         shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
         }),
     });
 
@@ -29,8 +31,8 @@ export const usePushNotifications = (): PushNotificationState => {
         Notifications.Notification | undefined
     >();
 
-    const notificationListener = useRef<Notifications.Subscription>();
-    const responseListener = useRef<Notifications.Subscription>();
+    const notificationListener = useRef<{ remove: () => void } | null>(null);
+    const responseListener = useRef<{ remove: () => void } | null>(null);
 
     async function registerForPushNotificationsAsync() {
         let token;
@@ -70,7 +72,6 @@ export const usePushNotifications = (): PushNotificationState => {
     useEffect(() => {
         registerForPushNotificationsAsync().then((token) => {
             setExpoPushToken(token);
-            // Ya no intentamos registrar el token aquí, lo haremos en el login
             console.log('Token obtenido:', token?.data);
         });
 
@@ -85,11 +86,13 @@ export const usePushNotifications = (): PushNotificationState => {
         });
 
         return () => {
-        Notifications.removeNotificationSubscription(
-            notificationListener.current!
-        );
-
-        Notifications.removeNotificationSubscription(responseListener.current!);
+        if (notificationListener.current) {
+            notificationListener.current.remove();
+        }
+        
+        if (responseListener.current) {
+            responseListener.current.remove();
+        }
         };
     }, []);
 
