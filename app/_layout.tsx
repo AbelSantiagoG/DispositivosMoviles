@@ -1,29 +1,28 @@
-import React, { useEffect, createContext, Suspense } from 'react'
+import React, { useEffect, useState } from 'react'
 import NetInfo from '@react-native-community/netinfo'
 import { Stack } from 'expo-router'
 import "../global.css"
-import { AuthProvider } from '../context/AuthContext';
-import { usePushNotifications } from '../hooks/usePushNotifications';
-import { Text, View } from 'react-native';
+import { AuthProvider } from '../context/AuthContext'
+import { usePushNotifications } from '../hooks/usePushNotifications'
+import { Text, View, ActivityIndicator } from 'react-native'
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
-import { ActivityIndicator } from 'react-native';
 import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
-import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
-import migrations from '../drizzle/migrations';
-import { addDummyData } from '../db/addDummyData';
-import { DatabaseProvider } from '../context/DatabaseContext';
+import migrations from '../drizzle/migrations'
+import { DatabaseProvider } from '../context/DatabaseContext'
+import * as schema from '../db/schema' // Asegúrate de exportar el schema correctamente
+import { useProductService } from '../lib/products'
 
 export const DATABASE_NAME = 'posdb'
 
 const HomeLayout = () => {
-  //const [isConnected, setIsConnected] = useState(false)
-
-  const [isConnected, setIsConnected] = React.useState<boolean | null>(null)
+  const [isConnected, setIsConnected] = useState<boolean | null>(null)
   const { expoPushToken, notification } = usePushNotifications()
+   const { syncProducts } = useProductService() // 💡 importante
 
   const expoDB = openDatabaseSync(DATABASE_NAME)
-  const db = drizzle(expoDB)
+  const db = drizzle(expoDB, { schema }) // Incluye el schema para tipado/autocompletado
   const { success, error } = useMigrations(db, migrations)
 
   const toastConfig = {
@@ -54,26 +53,43 @@ const HomeLayout = () => {
         text2Style={{ fontSize: 14, color: '#ddd' }}
       />
     ),
-  };
-
-  
+  }
 
   useEffect(() => {
-    if(success){
-      addDummyData(db)
+    if (success) {
+      console.log("✅ Migraciones ejecutadas correctamente")
     }
-    console.log('expoPushToken', expoPushToken)
-    console.log("notificacion", notification)
+    if (error) {
+      console.error("❌ Error al aplicar migraciones", error)
+    }
+
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected)
+      if (state.isConnected) {
+        console.log("🌐 Conexión detectada. Sincronizando productos...")
+        syncProducts()
+      }
     })
+
+    console.log('📱 Expo Push Token:', expoPushToken)
+    console.log('🔔 Notificación:', notification)
+
     return () => {
-      unsubscribe();
+      unsubscribe()
     }
-  }, [expoPushToken, notification])
+  }, [expoPushToken, notification, success, error])
+
+  // Esperar migraciones antes de renderizar la app
+  if (!success) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ marginTop: 16, color: '#fff' }}>Inicializando base de datos...</Text>
+      </View>
+    )
+  }
 
   return (
-    /*<Text selectable={true}>{expoPushToken?.data}</Text>*/
     <SQLiteProvider databaseName={DATABASE_NAME}>
       <DatabaseProvider db={expoDB}>
         <Stack>
@@ -84,11 +100,10 @@ const HomeLayout = () => {
           <Stack.Screen name="no-connection" options={{ headerShown: false }} />
           <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
         </Stack>
-
-        <Toast config={toastConfig} /> 
+        <Toast config={toastConfig} />
       </DatabaseProvider>
     </SQLiteProvider>
   )
 }
 
-export default HomeLayout 
+export default HomeLayout

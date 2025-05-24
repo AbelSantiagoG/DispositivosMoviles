@@ -53,6 +53,7 @@ export const product = sqliteTable('product', {
     enterprise_id: integer('enterprise_id').references(() => enterprise.id),
     category_id: integer('category_id').references(() => category.id),
     supplier_id: integer('supplier_id').references(() => supplier.id),
+    synced: integer('synced').default(1)
 })
 
 // ───── CLIENT ─────

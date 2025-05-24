@@ -8,7 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ProductoFormData, productoFormSchema } from '../../../../validators/products';
-import { productService } from '../../../../lib/products';
+import { useProductService } from '../../../../lib/products';
 import { categoriesService, CategorieData } from '../../../../lib/categories';
 
 const ProductDetails = () => {
@@ -17,6 +17,7 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [product, setProduct] = useState<any>(null);
     const [categorias, setCategorias] = useState<CategorieData[]>([]);
+    const { getProductById, updateProduct, deleteProduct } = useProductService();
 
     const { handleSubmit, setValue, control, formState: { errors }, reset } = useForm<ProductoFormData>({
         resolver: zodResolver(productoFormSchema)   
@@ -25,7 +26,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const data = await productService.getProductById(Number(idProduct));
+                const data = await getProductById(Number(idProduct));
                 setProduct(data);
                 setValue('nombre', data.name);
                 setValue('descripcion', data.description);
@@ -56,7 +57,7 @@ const ProductDetails = () => {
 
     const onSubmit = async (data: ProductoFormData) => {
         try {
-            await productService.updateProduct(Number(idProduct), {
+            await updateProduct(Number(idProduct), {
                 name: data.nombre,
                 description: data.descripcion,
                 stock: data.stock,
@@ -76,7 +77,7 @@ const ProductDetails = () => {
             setModalVisible(false);
             Alert.alert('Éxito', 'Producto actualizado correctamente');
             
-            const updatedProduct = await productService.getProductById(Number(idProduct));
+            const updatedProduct = await getProductById(Number(idProduct));
             setProduct(updatedProduct);
         } catch (error) {
             console.error('Error al actualizar producto:', error);
@@ -95,7 +96,7 @@ const ProductDetails = () => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await productService.deleteProduct(Number(idProduct));
+                            await deleteProduct(Number(idProduct));
                             Alert.alert(
                                 'Éxito', 
                                 'Producto eliminado correctamente',

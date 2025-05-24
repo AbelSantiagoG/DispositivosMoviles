@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import { useRouter } from "expo-router";
 import { ProductList } from '../../../components/organisms/ProductList';
 import { useState, useEffect } from 'react';
-import { productService } from '../../../lib/products';
+import { useProductService } from '../../../lib/products';
 import { ProtectedRoute } from '../../../context/ProtectedRoute';
 import { PERMISSIONS } from '../../../constants/permissions';
 
@@ -11,19 +11,20 @@ const Products = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { getAllProducts } = useProductService();
 
     const listProducts = async () => {
         setLoading(true);
         setError(null);
         
         try {
-            const data = await productService.getAllProducts();
-            const formattedProducts = data.map(product => ({
+            const data = await getAllProducts();
+            const formattedProducts = data.map((product: { id: number; name: string; public_price: number }) => ({
                 id: product.id.toString(),
                 name: product.name,
                 price: product.public_price,
-                image: require('../../../assets/product.png')
-            }));
+                image: require('../../../assets/product.png'),
+                }));
             setProducts(formattedProducts);
         } catch (error) {
             setError('No se pudieron cargar los productos');
