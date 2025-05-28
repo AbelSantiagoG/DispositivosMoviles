@@ -3,12 +3,13 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import { PublicRoute } from '../../context/PublicRoute';
+import { RegisterProvider } from '../../context/RegisterContext';
 
 const RegisterLayoutContent = () => {
     return (
         <SafeAreaView className="flex-1 bg-black">
-            <View className=" items-center justify-center mt-10">
-                <View className="w-52 h-20 mb-4 ">
+            <View className="items-center justify-center mt-10">
+                <View className="w-52 h-20 mb-4">
                     <Image className="w-full h-full" source={require("../../assets/logo.png")} resizeMode="contain" />
                 </View>
             </View>
@@ -27,7 +28,9 @@ const RegisterLayoutContent = () => {
 export default function RegisterLayout() {
     return (
         <PublicRoute>
-            <RegisterLayoutContent />
+            <RegisterProvider>
+                <RegisterLayoutContent />
+            </RegisterProvider>
         </PublicRoute>
     );
 }

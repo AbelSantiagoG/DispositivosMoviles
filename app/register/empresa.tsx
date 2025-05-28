@@ -1,76 +1,35 @@
 import { View, ScrollView } from 'react-native';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { empresaFormSchema, type EmpresaFormData } from '../../validators/register';
+import { EmpresaFormData } from '../../validators/register';
 import { router } from 'expo-router';
 import { pageContainer } from '../../components/Tokens';
-import { CustomInput } from '../../components/atoms/CustomInput';
+import { EmpresaRegisterForm } from '../../components/organisms/RegisterForm';
+import { useRegister } from '../../context/RegisterContext';
 import { Button } from '../../components/atoms/Button';
-import { ProgressSteps } from '../../components/molecules/ProgressSteps';
+import Toast from 'react-native-toast-message';
 
 export default function RegisterEmpresa() {
-    const { control, handleSubmit, formState: { errors } } = useForm<EmpresaFormData>({
-        resolver: zodResolver(empresaFormSchema)
-    });
+    const { updateEnterpriseData, clearForm, setStepValidation } = useRegister();
 
     const onSubmit = (data: EmpresaFormData) => {
-        console.log(data);
+        updateEnterpriseData(data);
+        setStepValidation('enterprise', { isValid: true, isVisited: true });
+        Toast.show({
+            type: 'success',
+            text1: 'Datos guardados',
+            text2: 'Los datos de la empresa han sido guardados correctamente',
+            position: 'bottom',
+        });
         router.push('/register/plan');
+    };
+
+    const handleClearForm = () => {
+        clearForm();
     };
 
     return (
         <ScrollView className={pageContainer}>
-            <ProgressSteps currentStep={2} />
-
-            <View>
-                <CustomInput
-                    control={control}
-                    name="nit"
-                    label="NIT"
-                    placeholder="NIT"
-                    keyboardType="numeric"
-                    error={errors.nit?.message}
-                />
-
-                <CustomInput
-                    control={control}
-                    name="nombre"
-                    label="Nombre de la Empresa"
-                    placeholder="Nombre de la Empresa"
-                    error={errors.nombre?.message}
-                />
-
-                <CustomInput
-                    control={control}
-                    name="email"
-                    label="Email"
-                    placeholder="Email"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    error={errors.email?.message}
-                />
-
-                <CustomInput
-                    control={control}
-                    name="telefono"
-                    label="Teléfono"
-                    placeholder="Teléfono"
-                    keyboardType="phone-pad"
-                    error={errors.telefono?.message}
-                />
-
-                <CustomInput
-                    control={control}
-                    name="ciudad"
-                    label="Ciudad"
-                    placeholder="Ciudad"
-                    error={errors.ciudad?.message}
-                />
-
-                <Button
-                    title="Continuar"
-                    onPress={handleSubmit(onSubmit)}
-                />
+            <View className="flex-1">
+                <EmpresaRegisterForm onSubmit={onSubmit} />
             </View>
         </ScrollView>
     );

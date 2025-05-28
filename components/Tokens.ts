@@ -8,7 +8,8 @@ export const safeAreaContainer = 'flex-1 bg-black';
 // Inputs
 export const inputContainer = 'mx-6 bg-zinc-900 text-white p-4 rounded-2xl';
 export const inputLabel = 'text-white mb-2 mx-6 mt-3';
-export const errorText = 'text-red-500 mt-1 mx-5';
+export const input = 'bg-zinc-900 text-white p-4 rounded-2xl w-full';
+export const errorText = "text-red-500 text-sm mt-1";
 
 // Buttons
 export const primaryButton = 'w-full bg-gray-500 p-4 rounded-full items-center mb-14 mt-6';
@@ -28,12 +29,34 @@ export const inactiveStep = 'w-10 h-10 rounded-full bg-neutral-500 items-center 
 export const activeStepText = 'text-black font-bold';
 export const inactiveStepText = 'text-white font-bold';
 
-// Modal
-export const modalContainer = 'bg-white p-6 rounded-lg';
-export const modalTitle = 'text-black text-lg font-bold mb-4 text-center';
-export const modalInput = 'border border-gray-400 rounded-lg p-2 mb-4';
+// Modal de Pago
+export const modalContainer = 'mx-6 bg-zinc-900 rounded-2xl';
+export const modalHeader = 'bg-zinc-800 p-6 rounded-t-2xl border-b border-zinc-700';
+export const modalTitle = 'text-white text-xl font-bold text-center';
+export const modalSubtitle = 'text-gray-400 text-sm text-center mt-2';
+export const modalContent = 'p-6';
+export const modalInputContainer = 'mb-4';
+export const modalInputLabel = 'text-white mb-2';
+export const modalInput = 'bg-zinc-800 text-white p-4 rounded-2xl border border-zinc-700';
+export const modalButtonContainer = 'mt-6';
+export const modalButton = 'w-full bg-gray-500 p-4 rounded-full items-center';
+export const modalButtonText = 'text-white text-lg font-bold';
+export const modalCloseButton = 'absolute right-4 top-4';
+export const modalDivider = 'border-t border-zinc-700 my-4';
+export const modalTotalContainer = 'flex-row justify-between items-center mb-4';
+export const modalTotalLabel = 'text-white text-lg';
+export const modalTotalAmount = 'text-white text-xl font-bold';
 
 // Logo Container
 export const logoContainer = 'items-center justify-center mt-6';
-export const logoWrapper = 'w-52 h-20 ';
+export const logoWrapper = 'w-52 h-20';
 export const logo = 'w-20 h-20';
+
+// Form
+export const formContainer = "p-4";
+export const formTitle = "text-white text-2xl font-bold mb-6";
+export const formSubtitle = "text-gray-300 text-base mb-4";
+
+// Error Container
+export const errorContainer = "bg-red-100 border-l-4 border-red-500 p-4 mb-4 rounded";
+export const errorTitle = "text-red-700 font-bold";

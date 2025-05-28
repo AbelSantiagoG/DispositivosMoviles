@@ -1,21 +1,16 @@
-import { TextInput, TextInputProps, Text, View } from 'react-native';
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
-import { inputContainer, inputLabel, errorText } from '../Tokens';
+import { View, Text, TextInput, TextInputProps } from 'react-native';
+import { Control, Controller } from 'react-hook-form';
+import { inputContainer, inputLabel, input, errorText } from '../Tokens';
+import { Ionicons } from '@expo/vector-icons';
 
-interface CustomInputProps<T extends FieldValues> extends Omit<TextInputProps, 'value'> {
-    control: Control<T>;
-    name: Path<T>;
+interface CustomInputProps extends TextInputProps {
+    control: Control<any>;
+    name: string;
     label: string;
     error?: string;
 }
 
-export function CustomInput<T extends FieldValues>({ 
-    control, 
-    name, 
-    label, 
-    error,
-    ...props 
-}: CustomInputProps<T>) {
+export function CustomInput({ control, name, label, error, ...rest }: CustomInputProps) {
     return (
         <View>
             <Text className={inputLabel}>{label}</Text>
@@ -23,18 +18,23 @@ export function CustomInput<T extends FieldValues>({
                 control={control}
                 name={name}
                 render={({ field: { onChange, value } }) => (
-                    <TextInput
-                        className={inputContainer}
-                        placeholderTextColor="#666"
-                        onChangeText={onChange}
-                        value={value}
-                        {...props}
-                    />
+                    <View>
+                        <TextInput
+                            className={inputContainer}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholderTextColor="#666"
+                            {...rest}
+                        />
+                        {error && (
+                            <View className="flex-row items-center mx-6 mt-1">
+                                <Ionicons name="alert-circle" size={16} color="#EF4444" />
+                                <Text className="text-red-500 text-sm ml-1">{error}</Text>
+                            </View>
+                        )}
+                    </View>
                 )}
             />
-            {error && (
-                <Text className={errorText}>{error}</Text>
-            )}
         </View>
     );
 } 

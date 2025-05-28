@@ -1,26 +1,36 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { userFormSchema, type UserFormData } from '../../validators/register';
+import { View } from 'react-native';
+import { UserFormData } from '../../validators/register';
 import { router } from 'expo-router';
 import { MainLayout } from '../../components/organisms/MainLayout';
-import { RegisterForm } from '../../components/organisms/RegisterForm';
+import { UserRegisterForm } from '../../components/organisms/RegisterForm';
+import { useRegister } from '../../context/RegisterContext';
+import { Button } from '../../components/atoms/Button';
+import Toast from 'react-native-toast-message';
 
 export default function RegisterUser() {
-    const { control, handleSubmit, formState: { errors } } = useForm<UserFormData>({
-        resolver: zodResolver(userFormSchema)
-    });
+    const { updateUserData, clearForm, setStepValidation } = useRegister();
 
     const onSubmit = (data: UserFormData) => {
-        console.log(data);
+        updateUserData(data);
+        setStepValidation('user', { isValid: true, isVisited: true });
+        Toast.show({
+            type: 'success',
+            text1: 'Datos guardados',
+            text2: 'Los datos del usuario han sido guardados correctamente',
+            position: 'bottom',
+        });
         router.push('/register/empresa');
+    };
+
+    const handleClearForm = () => {
+        clearForm();
     };
 
     return (
         <MainLayout showBackButton>
-            <RegisterForm
-                formType="user"
-                onSubmit={onSubmit}
-            />
+            <View className="flex-1">
+                <UserRegisterForm onSubmit={onSubmit} />
+            </View>
         </MainLayout>
     );
 }

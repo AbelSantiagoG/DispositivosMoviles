@@ -8,6 +8,10 @@ import { ProgressSteps } from '../../components/molecules/ProgressSteps';
 import { PlanCard } from '../../components/molecules/PlanCard';
 import { PaymentModal } from '../../components/molecules/PaymentModal';
 import { useState } from 'react';
+import { useRegister } from '../../context/RegisterContext';
+import { registerService } from '../../lib/register';
+import Toast from 'react-native-toast-message';
+import { Button } from '../../components/atoms/Button';
 
 const PLANES = [
     {
@@ -35,17 +39,76 @@ export default function RegisterPlan() {
         resolver: zodResolver(planFormSchema)
     });
     const [modalVisible, setModalVisible] = useState(false);
+    const { registerData, setIsLoading, setError, clearForm, setStepValidation, stepValidation } = useRegister();
 
-    const onSubmit = (data: PlanFormData) => {
-        console.log(data);
-        setModalVisible(false);
-        alert('Pago exitoso');
-        router.replace('/login');
+    const validatePreviousSteps = () => {
+        if (!stepValidation.user.isValid || !stepValidation.enterprise.isValid) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Por favor complete los pasos anteriores antes de continuar',
+                position: 'bottom',
+            });
+            return false;
+        }
+        return true;
+    };
+
+    const onSubmit = async (data: PlanFormData) => {
+        if (!validatePreviousSteps()) {
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            setError(null);
+            setStepValidation('payment', { isVisited: true });
+            
+            // Simular procesamiento del pago
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Enviar datos al backend
+            await registerService.register(registerData);
+            
+            setStepValidation('payment', { isValid: true, isVisited: true });
+            
+            // Mostrar mensaje de éxito
+            Toast.show({
+                type: 'success',
+                text1: '¡Registro exitoso!',
+                text2: 'Tu cuenta ha sido creada correctamente.',
+                position: 'bottom',
+                visibilityTime: 3000,
+            });
+            
+            // Limpiar formulario y redirigir
+            await clearForm();
+            router.replace('/login');
+        } catch (error: any) {
+            setStepValidation('payment', { isValid: false, isVisited: true });
+            setError(error.message || 'Error al procesar el registro');
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.message || 'Error al procesar el registro',
+                position: 'bottom',
+                visibilityTime: 3000,
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const seleccionarPlan = (planId: string) => {
+        if (!validatePreviousSteps()) {
+            return;
+        }
         setValue('plan', planId);
         setModalVisible(true);
+    };
+
+    const handleClearForm = () => {
+        clearForm();
     };
 
     return (
