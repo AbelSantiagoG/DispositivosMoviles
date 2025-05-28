@@ -2,16 +2,16 @@ import { View, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ProtectedRoute } from '../../../context/ProtectedRoute';
 import { SuppliersList } from '../../../components/organisms/SuppliersList'
-import { supplierService, SupplierData } from '../../../lib/suppliers'
-import { SuppierDAO } from '../../../interfaces/Auth'
+import { useSupplierService, SupplierData } from '../../../lib/suppliers'
 import { PERMISSIONS } from '../../../constants/permissions';
 
 const Suppliers = () => {
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+  const [suppliers, setSuppliers] = useState<(SupplierData & { id: number })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const supplierService = useSupplierService();
 
-  const listESuppliers = async () => {
+  const listSuppliers = async () => {
     setLoading(true);
     setError(null);
     
@@ -26,7 +26,7 @@ const Suppliers = () => {
   };
   
   useEffect(() => {
-    listESuppliers();
+    listSuppliers();
   }, []);
 
   return (
@@ -36,7 +36,7 @@ const Suppliers = () => {
       ) : error ? (
         <Text className="text-red-500 text-center mt-10">{error}</Text>
       ) : (
-        <SuppliersList suppliers={suppliers} listSuppliers={listESuppliers} />
+        <SuppliersList suppliers={suppliers} listSuppliers={listSuppliers} />
       )}
     </ProtectedRoute>
   );

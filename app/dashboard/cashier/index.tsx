@@ -5,14 +5,31 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { ProtectedRoute } from '../../../context/ProtectedRoute';
 import { PERMISSIONS } from '../../../constants/permissions';
 import { router } from 'expo-router';
-import { productsService, Product, CartItem } from '../../../lib/products';
+import { useProductService } from '../../../lib/products';
 import { useCart } from '../../../context/CartContext';
+
+interface Product {
+  id: number;
+  name: string;
+  public_price: number;
+  stock: number;
+  category: string;
+}
+
+interface CartItem {
+  id: number;
+  name: string;
+  public_price: number;
+  quantity: number;
+  category: string;
+}
 
 const CashierScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const productService = useProductService();
   
   // Usar el contexto del carrito
   const { cartItems, addToCart, getTotalAmount } = useCart();
@@ -26,7 +43,7 @@ const CashierScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await productsService.getProducts();
+      const response = await productService.getAllProducts();
       setProducts(response || []);
     } catch (error) {
       console.error('Error al cargar productos:', error);

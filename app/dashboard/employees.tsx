@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '../../context/ProtectedRoute';
 import { EmployeesList } from '../../components/organisms/EmployeesList';
-import { employeeService } from '../../lib/employees';
-import { EmployeeData } from '../../lib/employees';
+import { employeeService, EmployeeData } from '../../lib/employees';
 import { Text } from 'react-native';
 import { PERMISSIONS } from '../../constants/permissions';
 
 const Employees = () => {
-  const [employees, setEmployees] = useState<EmployeeData[]>([]); 
+  const [employees, setEmployees] = useState<(EmployeeData & { id: number })[]>([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null);
 
