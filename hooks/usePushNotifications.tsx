@@ -15,11 +15,9 @@ export interface PushNotificationState {
 export const usePushNotifications = (): PushNotificationState => {
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
-        shouldPlaySound: false,
-        shouldShowAlert: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
         }),
     });
 
@@ -37,33 +35,33 @@ export const usePushNotifications = (): PushNotificationState => {
     async function registerForPushNotificationsAsync() {
         let token;
         if (Device.isDevice) {
-        const { status: existingStatus } =
-            await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
+            const { status: existingStatus } =
+                await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
 
-        if (existingStatus !== "granted") {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-        if (finalStatus !== "granted") {
-            alert("Failed to get push token for push notification");
-            return;
-        }
+            if (existingStatus !== "granted") {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== "granted") {
+                alert("Failed to get push token for push notification");
+                return;
+            }
 
-        token = await Notifications.getExpoPushTokenAsync({
-            projectId: Constants.expoConfig?.extra?.eas.projectId,
-        });
+            token = await Notifications.getExpoPushTokenAsync({
+                projectId: Constants.expoConfig?.extra?.eas.projectId,
+            });
         } else {
-        alert("Must be using a physical device for Push notifications");
+            alert("Must be using a physical device for Push notifications");
         }
 
         if (Platform.OS === "android") {
-        Notifications.setNotificationChannelAsync("default", {
-            name: "default",
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: "#FF231F7C",
-        });
+            Notifications.setNotificationChannelAsync("default", {
+                name: "default",
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: "#FF231F7C",
+            });
         }
 
         return token;
@@ -77,23 +75,23 @@ export const usePushNotifications = (): PushNotificationState => {
         });
 
         notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-            setNotification(notification);
-        });
+            Notifications.addNotificationReceivedListener((notification) => {
+                setNotification(notification);
+            });
 
         responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-            console.log(response);
-        });
+            Notifications.addNotificationResponseReceivedListener((response) => {
+                console.log(response);
+            });
 
         return () => {
-        if (notificationListener.current) {
-            notificationListener.current.remove();
-        }
-        
-        if (responseListener.current) {
-            responseListener.current.remove();
-        }
+            if (notificationListener.current) {
+                notificationListener.current.remove();
+            }
+
+            if (responseListener.current) {
+                responseListener.current.remove();
+            }
         };
     }, []);
 
