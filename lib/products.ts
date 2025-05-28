@@ -16,6 +16,24 @@ export interface ProductData {
     supplier_id: number;
 }
 
+export interface Product {
+    id: string;
+    name: string;
+    public_price: number;
+    category: string;
+    stock: number;
+    barcode?: string;
+    description?: string;
+}
+
+export interface CartItem {
+    id: string;
+    name: string;
+    public_price: number;
+    quantity: number;
+    category: string;
+}
+
 export const productService = {
     async getAllProducts() {
         try {
@@ -72,6 +90,41 @@ export const productService = {
             await api.delete(`/products/${id}`);
         } catch (error) {
             console.error(`Error al eliminar producto con ID ${id}:`, error);
+            throw error;
+        }
+    }
+};
+
+export const productsService = {
+    // Obtener todos los productos disponibles
+    async getProducts() {
+        try {
+            const response = await api.get('/products');
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener productos:', error);
+            throw error;
+        }
+    },
+
+    // Buscar producto por código de barras
+    async getProductByBarcode(barcode: string) {
+        try {
+            const response = await api.get(`/products/barcode/${barcode}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error al buscar producto por código de barras:', error);
+            throw error;
+        }
+    },
+
+    // Buscar productos por nombre o categoría
+    async searchProducts(query: string) {
+        try {
+            const response = await api.get(`/products/search?q=${encodeURIComponent(query)}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error al buscar productos:', error);
             throw error;
         }
     }

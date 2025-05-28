@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { authService, UpdateProfileData } from '../../lib/auth';
+import { notificationsService } from '../../lib/notifications';
 import { useRouter } from "expo-router";
 import { useAuth } from '../../context/AuthContext';
 import Toast from "react-native-toast-message";
@@ -13,6 +14,7 @@ const Profile = () => {
   const router = useRouter();
   const { user, setUser } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [sendingPanic, setSendingPanic] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   // Estados para los campos del formulario
@@ -185,6 +187,46 @@ const Profile = () => {
     });
   };
 
+  const sendPanicAlert = async () => {
+    Alert.alert(
+      '🚨 BOTÓN DE PÁNICO',
+      '¿Estás seguro de que quieres enviar una alerta de pánico? Esto notificará a todos los empleados que te encuentras en peligro.',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'ENVIAR ALERTA',
+          style: 'destructive',
+          onPress: async () => {
+            setSendingPanic(true);
+            try {
+              await notificationsService.sendPanicAlert();
+              Toast.show({
+                type: 'success',
+                position: 'bottom',
+                text1: '🚨 Alerta Enviada',
+                text2: 'Se ha notificado a todos los empleados sobre la situación de emergencia',
+                visibilityTime: 5000,
+              });
+            } catch (error) {
+              console.error('Error al enviar alerta de pánico:', error);
+              Toast.show({
+                type: 'error',
+                position: 'bottom',
+                text1: 'Error',
+                text2: 'No se pudo enviar la alerta de pánico. Intenta nuevamente.',
+                visibilityTime: 4000,
+              });
+            } finally {
+              setSendingPanic(false);
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const validateOnBlur = (field: 'name' | 'lastname' | 'telephone') => {
     switch (field) {
@@ -365,6 +407,27 @@ const Profile = () => {
           </View>
         </View>
       )}
+      
+      {/* Botón de Pánico */}
+      <TouchableOpacity 
+        onPress={sendPanicAlert}
+        disabled={sendingPanic}
+        className={`bg-red-600 rounded-full p-4 mt-6 mb-4 items-center w-full border-2 border-red-400 ${sendingPanic ? 'opacity-70' : ''}`}
+      >
+        <View className="flex-row items-center justify-center">
+          {sendingPanic ? (
+            <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <FontAwesome name="exclamation-triangle" size={24} color="white" style={{ marginRight: 12 }} />
+          )}
+          <Text className="text-white font-bold text-lg">
+            {sendingPanic ? 'ENVIANDO ALERTA...' : '🚨 BOTÓN DE PÁNICO 🚨'}
+          </Text>
+        </View>
+        <Text className="text-red-200 text-sm mt-2 text-center">
+          Presiona solo en caso de emergencia
+        </Text>
+      </TouchableOpacity>
       
       <TouchableOpacity 
         onPress={logout} 

@@ -21,24 +21,24 @@ export const notificationsService = {
         }
     },
 
-    // Enviar notificación de prueba al usuario actual
-    async sendTestNotification() {
+    // Enviar recomendaciones de mejora de plan a todos los administradores
+    async sendPlanUpgradeRecommendations() {
         try {
-            const response = await api.post('/notifications/send-test');
+            const response = await api.post('/notifications/send-plan-upgrade-recommendations');
             return response.data;
         } catch (error) {
-            console.error('Error al enviar notificación de prueba:', error);
+            console.error('Error al enviar recomendaciones de mejora de plan:', error);
             throw error;
         }
     },
 
-    // Enviar notificación a un usuario específico
-    async sendToUser(userId: string) {
+    // Enviar recordatorios de pago a los administradores
+    async sendPaymentReminders() {
         try {
-            const response = await api.post(`/notifications/send-to-user/${userId}`);
+            const response = await api.post('/notifications/send-payment-reminders');
             return response.data;
         } catch (error) {
-            console.error(`Error al enviar notificación al usuario ${userId}:`, error);
+            console.error('Error al enviar recordatorios de pago:', error);
             throw error;
         }
     },
@@ -50,6 +50,17 @@ export const notificationsService = {
             return response.data;
         } catch (error) {
             console.error('Error al obtener la lista de usuarios:', error);
+            throw error;
+        }
+    },
+
+    // Enviar alerta de pánico a todos los empleados
+    async sendPanicAlert() {
+        try {
+            const response = await api.post('/notifications/panic-button');
+            return response.data;
+        } catch (error) {
+            console.error('Error al enviar alerta de pánico:', error);
             throw error;
         }
     }

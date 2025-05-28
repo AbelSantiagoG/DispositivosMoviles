@@ -14,4 +14,7 @@ export const PERMISSIONS = {
   
   // Permisos de reportes
   VER_REPORTES: 'VER_REPORTES',
+
+  // Permisos de notificaciones
+  GESTIONAR_NOTIFICACIONES: 'GESTIONAR_PROVEEDORES',
 }; 

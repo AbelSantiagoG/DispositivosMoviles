@@ -100,7 +100,8 @@ export function DashboardTabBar() {
                 options={{
                     tabBarIcon:({color}) =>(
                         <AntDesign name="notification" size={20} color={color} />
-                    )
+                    ),
+                    href: null
                 }
                 }
             />

@@ -1,131 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { notificationsService } from '../../lib/notifications';
-import { usePushNotifications } from '../../hooks/usePushNotifications';
-import { UserNotificationList } from '../../components/molecules/UserNotificationList';
-import { authService } from '../../lib/auth';
-
-interface Employee {
-  id: string;
-  name: string;
-  lastname: string;
-  email: string;
-}
+import { PERMISSIONS } from '../../constants/permissions';
+import { ProtectedRoute } from '../../context/ProtectedRoute';
 
 const NotificationsScreen = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const { expoPushToken } = usePushNotifications();
+  const [sendingPlanUpgrade, setSendingPlanUpgrade] = useState(false);
+  const [sendingPaymentReminder, setSendingPaymentReminder] = useState(false);
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  const fetchEmployees = async () => {
-    setLoading(true);
+  const sendPlanUpgradeRecommendations = async () => {
+    setSendingPlanUpgrade(true);
     try {
-      const response = await notificationsService.getUsers();
-      setEmployees(response.data || []);
+      await notificationsService.sendPlanUpgradeRecommendations();
+      Alert.alert('Éxito', 'Recomendaciones de mejora de plan enviadas correctamente.');
     } catch (error) {
-      console.error('Error al obtener la lista de empleados:', error);
-      Alert.alert('Error', 'No se pudo cargar la lista de empleados.');
+      console.error('Error al enviar recomendaciones de mejora de plan:', error);
+      Alert.alert('Error', 'No se pudieron enviar las recomendaciones de mejora de plan.');
     } finally {
-      setLoading(false);
+      setSendingPlanUpgrade(false);
     }
   };
 
-  const sendTestNotification = async () => {
-    setSending(true);
+  const sendPaymentReminders = async () => {
+    setSendingPaymentReminder(true);
     try {
-      await notificationsService.sendTestNotification();
-      Alert.alert('Éxito', 'Notificación de prueba enviada correctamente.');
+      await notificationsService.sendPaymentReminders();
+      Alert.alert('Éxito', 'Recordatorios de pago enviados correctamente.');
     } catch (error) {
-      console.error('Error al enviar notificación de prueba:', error);
-      Alert.alert('Error', 'No se pudo enviar la notificación de prueba.');
+      console.error('Error al enviar recordatorios de pago:', error);
+      Alert.alert('Error', 'No se pudieron enviar los recordatorios de pago.');
     } finally {
-      setSending(false);
-    }
-  };
-
-  const sendToUser = async (userId: string, name: string) => {
-    setSending(true);
-    try {
-      await notificationsService.sendToUser(userId);
-      Alert.alert('Éxito', `Notificación enviada a ${name} correctamente.`);
-    } catch (error) {
-      console.error(`Error al enviar notificación al usuario ${userId}:`, error);
-      Alert.alert('Error', `No se pudo enviar la notificación a ${name}.`);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const registerToken = async () => {
-    if (!expoPushToken?.data) {
-      Alert.alert('Error', 'No hay token disponible para registrar.');
-      return;
-    }
-
-    setRegistering(true);
-    try {
-      await authService.registerPushToken(expoPushToken.data);
-      Alert.alert('Éxito', 'Token registrado correctamente.');
-    } catch (error) {
-      console.error('Error al registrar el token:', error);
-      Alert.alert('Error', 'No se pudo registrar el token.');
-    } finally {
-      setRegistering(false);
+      setSendingPaymentReminder(false);
     }
   };
 
   return (
-    <ScrollView className="bg-black flex-1 p-4">
-      <View className="mb-6">
-        <Text className="text-white text-2xl font-bold mb-2">Centro de Notificaciones</Text>
-        <View className="flex-row items-center justify-between">
-          <Text className={expoPushToken ? "text-gray-400" : "text-red-400"}>
-            {expoPushToken ? "Token del dispositivo registrado" : "Token del dispositivo no registrado"}
-          </Text>
-          <TouchableOpacity 
-            onPress={registerToken} 
-            disabled={registering || !expoPushToken}
-            className="bg-green-700 px-3 py-2 rounded-lg"
-          >
-            {registering ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : (
-              <Text className="text-white">Actualizar Token</Text>
-            )}
-          </TouchableOpacity>
+    <ProtectedRoute permissionName={PERMISSIONS.GESTIONAR_NOTIFICACIONES}>
+      <ScrollView className="bg-black flex-1 p-4">
+        <View className="mb-8">
+          <Text className="text-white text-2xl font-bold mb-2">Centro de Notificaciones</Text>
+        <Text className="text-gray-400">Envía notificaciones a los administradores del sistema</Text>
+      </View>
+
+      <View className="space-y-6">
+        <TouchableOpacity
+          onPress={sendPlanUpgradeRecommendations}
+          className="bg-blue-600 p-4 rounded-lg items-center flex-row justify-center mb-4"
+          disabled={sendingPlanUpgrade}
+        >
+          {sendingPlanUpgrade ? (
+            <ActivityIndicator color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <FontAwesome5 name="arrow-up" size={18} color="white" style={{ marginRight: 8 }} />
+          )}
+          <Text className="text-white font-semibold text-lg">Enviar Recomendaciones de Mejora de Plan</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={sendPaymentReminders}
+          className="bg-orange-600 p-4 rounded-lg items-center flex-row justify-center"
+          disabled={sendingPaymentReminder}
+        >
+          {sendingPaymentReminder ? (
+            <ActivityIndicator color="white" style={{ marginRight: 8 }} />
+          ) : (
+            <FontAwesome5 name="credit-card" size={18} color="white" style={{ marginRight: 8 }} />
+          )}
+          <Text className="text-white font-semibold text-lg">Enviar Recordatorios de Pago</Text>
+        </TouchableOpacity>
         </View>
-      </View>
-
-      <TouchableOpacity
-        onPress={sendTestNotification}
-        className="bg-blue-600 p-4 rounded-lg mb-6 items-center flex-row justify-center"
-        disabled={sending}
-      >
-        {sending ? (
-          <ActivityIndicator color="white" style={{ marginRight: 8 }} />
-        ) : (
-          <FontAwesome5 name="bell" size={18} color="white" style={{ marginRight: 8 }} />
-        )}
-        <Text className="text-white font-semibold text-lg">Enviar notificación de prueba</Text>
-      </TouchableOpacity>
-
-      <View>
-        <Text className="text-white text-xl font-semibold mb-4">Enviar a un usuario específico</Text>
-        <UserNotificationList 
-          users={employees}
-          onSendNotification={sendToUser}
-          loading={loading}
-          sending={sending}
-        />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </ProtectedRoute>
   );
 };
 

@@ -43,7 +43,8 @@ const Dashboard = () => {
             title: 'Notificaciones',
             description: 'Envía notificaciones push a usuarios.',
             icon: <FontAwesome5 name="bell" size={20} color="white" />,
-            href: '/dashboard/notifications'
+            href: '/dashboard/notifications',
+            permission: PERMISSIONS.GESTIONAR_NOTIFICACIONES
         }
     ];
 
