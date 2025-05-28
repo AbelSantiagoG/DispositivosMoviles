@@ -1,29 +1,64 @@
-import React, { useEffect, useState, createContext, Suspense } from 'react'
+// app/_layout.tsx
+import React, { useEffect, useState } from 'react'
 import NetInfo from '@react-native-community/netinfo'
 import { Stack } from 'expo-router'
 import "../global.css"
-import { AuthProvider } from '../context/AuthContext';
-import { usePushNotifications } from '../hooks/usePushNotifications';
-import { Text, View } from 'react-native';
+import { usePushNotifications } from '../hooks/usePushNotifications'
+import { Text, View, ActivityIndicator } from 'react-native'
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
-import { ActivityIndicator } from 'react-native';
-import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite'
-import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { SQLiteProvider, openDatabaseSync, deleteDatabaseSync } from 'expo-sqlite'
+import { drizzle } from 'drizzle-orm/expo-sqlite'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
-import migrations from '../drizzle/migrations';
-import { addDummyData } from '../db/addDummyData';
-import { DatabaseProvider } from '../context/DatabaseContext';
+import migrations from '../drizzle/migrations'
+import { DatabaseProvider } from '../context/DatabaseContext'
 import * as schema from '../db/schema'
+import { ProductSyncer } from '../components/organisms/ProductSyncer' 
 
 export const DATABASE_NAME = 'posdb'
 
 const HomeLayout = () => {
   const [isConnected, setIsConnected] = useState<boolean | null>(null)
+  const [dbError, setDbError] = useState<Error | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   const { expoPushToken, notification } = usePushNotifications()
-  //const { syncProducts } = useProductService() // 💡 importante
+
+  // Inicializar la base de datos
   const expoDB = openDatabaseSync(DATABASE_NAME)
-  const db = drizzle(expoDB, { schema }) // Incluye el schema para tipado/autocompletado
+  const db = drizzle(expoDB, { schema })
   const { success, error } = useMigrations(db, migrations)
+
+  // Manejar la inicialización y errores
+  useEffect(() => {
+    const initializeDatabase = async () => {
+      try {
+        // Intentar eliminar la base de datos existente
+        try {
+          deleteDatabaseSync(DATABASE_NAME)
+        } catch (e) {
+          console.log('No existing database to delete or database is in use')
+        }
+      } catch (error) {
+        console.error("Error durante la inicialización:", error)
+        setDbError(error as Error)
+      } finally {
+        setIsInitializing(false)
+      }
+    }
+
+    initializeDatabase()
+  }, [])
+
+  // Manejar el resultado de las migraciones
+  useEffect(() => {
+    if (error) {
+      console.error("❌ Error al aplicar migraciones:", error)
+      setDbError(error)
+    }
+    if (success) {
+      console.log("✅ Migraciones ejecutadas correctamente")
+      setDbError(null)
+    }
+  }, [success, error])
 
   const toastConfig = {
     success: (props: any) => (
@@ -53,40 +88,42 @@ const HomeLayout = () => {
         text2Style={{ fontSize: 14, color: '#ddd' }}
       />
     ),
-  };
-
-
+  }
 
   useEffect(() => {
-    if (success) {
-      console.log("✅ Migraciones ejecutadas correctamente")
-    }
-    if (error) {
-      console.error("❌ Error al aplicar migraciones", error)
-    }
-
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected)
-      if (state.isConnected) {
-        console.log("🌐 Conexión detectada. Sincronizando productos...")
-        //syncProducts()
-      }
     })
 
-    console.log('📱 Expo Push Token:', expoPushToken)
-    console.log('🔔 Notificación:', notification)
-
     return () => {
-      unsubscribe();
+      unsubscribe()
     }
-  }, [expoPushToken, notification, success, error])
+  }, [])
 
-  // Esperar migraciones antes de renderizar la app
-  if (!success) {
+  useEffect(() => {
+    if (expoPushToken) {
+      console.log('📱 Expo Push Token:', expoPushToken)
+    }
+    if (notification) {
+      console.log('🔔 Notificación:', notification)
+    }
+  }, [expoPushToken, notification])
+
+  if (isInitializing) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
         <Text style={{ marginTop: 16, color: '#fff' }}>Inicializando base de datos...</Text>
+      </View>
+    )
+  }
+
+  if (dbError) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <Text style={{ color: '#e74c3c', marginBottom: 16 }}>Error al inicializar la base de datos</Text>
+        <Text style={{ color: '#fff', textAlign: 'center', padding: 16 }}>{dbError.message}</Text>
+        <Text style={{ color: '#fff', marginTop: 16 }}>Por favor, reinicia la aplicación</Text>
       </View>
     )
   }
@@ -103,10 +140,13 @@ const HomeLayout = () => {
           <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
         </Stack>
 
+        {/* 👇 Solo renderiza cuando haya conexión */}
+        {isConnected && <ProductSyncer />}
+
         <Toast config={toastConfig} />
       </DatabaseProvider>
     </SQLiteProvider>
   )
 }
 
-export default HomeLayout 
+export default HomeLayout

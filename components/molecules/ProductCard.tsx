@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
-import { productService } from '../../lib/products';
+import { useProductService } from '../../lib/products';
 
 interface ProductCardProps {
     name: string;
@@ -13,6 +13,7 @@ export function ProductCard({ name, price, image, href }: ProductCardProps) {
     const windowWidth = Dimensions.get('window').width;
     const cardWidth = (windowWidth - 32) / 2; // 32 es el padding total horizontal (16 * 2)
     const imageHeight = cardWidth; // Mantener proporción cuadrada
+    const productService = useProductService();
 
     return (
         <Link href={href} asChild>

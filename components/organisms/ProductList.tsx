@@ -6,8 +6,8 @@ import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productoFormSchema, type ProductoFormData } from '../../validators/products';
-import { productService } from '../../lib/products';
-import { categoriesService, CategorieData } from '../../lib/categories';
+import { useProductService } from '../../lib/products';
+import { useCategoryService, type CategoryData } from '../../lib/categories';
 import { Picker } from '@react-native-picker/picker';
 import type { ImagePickerAsset } from 'expo-image-picker';
 
@@ -29,10 +29,13 @@ export function ProductList({ products, refreshProducts }: ProductListProps) {
     });
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [categories, setCategories] = useState<CategorieData[]>([]);
+    const [categories, setCategories] = useState<CategoryData[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const productService = useProductService();
+    const categoryService = useCategoryService();
 
     // Función para cargar todos los productos
     const loadAllProducts = async () => {
@@ -59,7 +62,7 @@ export function ProductList({ products, refreshProducts }: ProductListProps) {
         const initializeData = async () => {
             try {
                 // Cargar categorías
-                const data = await categoriesService.getAllCategories();
+                const data = await categoryService.getAllCategories();
                 setCategories(data);
                 
                 // Cargar productos iniciales

@@ -8,8 +8,8 @@ import Feather from '@expo/vector-icons/Feather';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ProductoFormData, productoFormSchema } from '../../../../validators/products';
-import { productService } from '../../../../lib/products';
-import { categoriesService, CategorieData } from '../../../../lib/categories';
+import { useProductService } from '../../../../lib/products';
+import { useCategoryService, CategoryData } from '../../../../lib/categories';
 
 const ProductDetails = () => {
     const { idProduct } = useLocalSearchParams();
@@ -17,9 +17,10 @@ const ProductDetails = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [loading, setLoading] = useState(true);
     const [product, setProduct] = useState<any>(null);
-    const [categorias, setCategorias] = useState<CategorieData[]>([]);
+    const [categorias, setCategorias] = useState<CategoryData[]>([]);
     const [updating, setUpdating] = useState(false);
-
+    const productService = useProductService();
+    const categoriesService = useCategoryService();
     const { handleSubmit, setValue, control, formState: { errors }, reset } = useForm<ProductoFormData>({
         resolver: zodResolver(productoFormSchema)   
     });

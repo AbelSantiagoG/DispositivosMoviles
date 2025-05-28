@@ -6,7 +6,7 @@ import { ProductoFormData } from '../../validators/products';
 import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect } from 'react';
-import { categoriesService, CategorieData } from '../../lib/categories';
+import { useCategoryService, type CategoryData } from '../../lib/categories';
 import * as ImagePicker from 'expo-image-picker';
 
 interface AddProductModalProps {
@@ -19,9 +19,10 @@ interface AddProductModalProps {
 }
 
 export function AddProductModal({ isVisible, onClose, onSubmit, control, errors, trigger }: AddProductModalProps) {
-    const [categorias, setCategorias] = useState<CategorieData[]>([]);
+    const [categorias, setCategorias] = useState<CategoryData[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+    const categoryService = useCategoryService();
 
     const mockProveedores = [
         { id: '1', nombre: 'Proveedor 1' },
@@ -34,7 +35,7 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors,
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const data = await categoriesService.getAllCategories();
+                const data = await categoryService.getAllCategories();
                 setCategorias(data);
             } catch (error) {
                 console.error('Error al obtener categorías:', error);
@@ -49,7 +50,6 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors,
 
     const handleImageSelection = async () => {
         try {
-            
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
