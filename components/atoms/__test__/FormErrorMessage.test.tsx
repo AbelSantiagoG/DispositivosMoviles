@@ -1,26 +1,35 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import FormErrorMessage from '../FormErrorMessage';
+import { FormErrorMessage } from '../FormErrorMessage';
 
-describe('FormErrorMessage component', () => {
-  it('renders correctly with an error message', () => {
-    const { getByText } = render(<FormErrorMessage message="This is an error" />);
-    
-    const errorMessage = getByText('This is an error');
-    expect(errorMessage).toBeTruthy();
+describe('FormErrorMessage', () => {
+  it('renderiza el mensaje de error cuando se proporciona', () => {
+    const errorMessage = 'Este campo es requerido';
+    const { getByText } = render(<FormErrorMessage message={errorMessage} />);
+    expect(getByText(errorMessage)).toBeTruthy();
   });
 
-  it('does not render when no message is provided', () => {
-    const { toJSON } = render(<FormErrorMessage />);
-    
-    // The component returns null when no message is provided
-    expect(toJSON()).toBeNull();
+  it('no renderiza nada cuando no hay mensaje de error', () => {
+    const { container } = render(<FormErrorMessage message="" />);
+    expect(container.children.length).toBe(0);
   });
 
-  it('shows the error icon', () => {
-    const { getByText } = render(<FormErrorMessage message="Error message" />);
-    
-    const errorIcon = getByText('❗');
-    expect(errorIcon).toBeTruthy();
+  it('renderiza con un estilo personalizado', () => {
+    const errorMessage = 'Error personalizado';
+    const customStyle = { color: 'red', fontSize: 16 };
+    const { getByText } = render(
+      <FormErrorMessage message={errorMessage} style={customStyle} />
+    );
+    const errorElement = getByText(errorMessage);
+    expect(errorElement.props.style).toMatchObject(customStyle);
+  });
+
+  it('renderiza con una clase personalizada', () => {
+    const errorMessage = 'Error con clase personalizada';
+    const { getByText } = render(
+      <FormErrorMessage message={errorMessage} className="custom-error" />
+    );
+    const errorElement = getByText(errorMessage);
+    expect(errorElement.props.className).toContain('custom-error');
   });
 });

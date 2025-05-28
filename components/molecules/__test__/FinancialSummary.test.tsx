@@ -2,37 +2,95 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { FinancialSummary } from '../FinancialSummary';
 
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  Link: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-describe('FinancialSummary component', () => {
-  it('renders correctly with the provided amount', () => {
-    const { getByText } = render(<FinancialSummary amount={1000} />);
+describe('FinancialSummary', () => {
+  it('renderiza correctamente con los valores proporcionados', () => {
+    const { getByText } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={1000}
+        onManage={() => {}}
+      />
+    );
     
-    // Title and section header
     expect(getByText('Resumen Financiero')).toBeTruthy();
-    expect(getByText('Ganancias')).toBeTruthy();
-    
-    // Formatted amount
-    expect(getByText('$1,000')).toBeTruthy();
-    
-    // Action button
-    expect(getByText('Administrar')).toBeTruthy();
+    expect(getByText('$1.000')).toBeTruthy();
   });
 
-  it('formats large numbers correctly', () => {
-    const { getByText } = render(<FinancialSummary amount={1000000} />);
+  it('formatea correctamente los números grandes', () => {
+    const { getByText } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={1000000}
+        onManage={() => {}}
+      />
+    );
     
-    // Formatted large amount
-    expect(getByText('$1,000,000')).toBeTruthy();
+    expect(getByText('$1.000.000')).toBeTruthy();
   });
 
-  it('handles zero amount', () => {
-    const { getByText } = render(<FinancialSummary amount={0} />);
+  it('maneja el evento onManage correctamente', () => {
+    const onManageMock = jest.fn();
+    const { getByText } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={1000}
+        onManage={onManageMock}
+      />
+    );
     
-    // Zero amount
+    fireEvent.press(getByText('Administrar'));
+    expect(onManageMock).toHaveBeenCalled();
+  });
+
+  it('renderiza con un estilo personalizado', () => {
+    const customStyle = { backgroundColor: 'red' };
+    const { getByTestId } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={1000}
+        onManage={() => {}}
+        style={customStyle}
+      />
+    );
+    
+    const container = getByTestId('financial-summary');
+    expect(container.props.style).toMatchObject(customStyle);
+  });
+
+  it('renderiza con una clase personalizada', () => {
+    const { getByTestId } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={1000}
+        onManage={() => {}}
+        className="custom-class"
+      />
+    );
+    
+    const container = getByTestId('financial-summary');
+    expect(container.props.className).toContain('custom-class');
+  });
+
+  it('renderiza con valores en cero', () => {
+    const { getByText } = render(
+      <FinancialSummary 
+        title="Resumen Financiero" 
+        amount={0} 
+        onManage={() => {}} 
+      />
+    );
     expect(getByText('$0')).toBeTruthy();
+  });
+
+  it('renderiza con valores negativos', () => {
+    const { getByText } = render(
+      <FinancialSummary
+        title="Resumen Financiero"
+        amount={-1000}
+        onManage={() => {}}
+      />
+    );
+    
+    expect(getByText('-$1.000')).toBeTruthy();
   });
 }); 
