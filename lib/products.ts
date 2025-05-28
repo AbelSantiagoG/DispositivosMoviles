@@ -25,6 +25,14 @@ export interface ProductData {
     supplier_id: number;
 }
 
+export interface ProductImageData extends ProductData {
+    image?: {
+        uri: string;
+        type: string;
+        name: string;
+    };
+}
+
 export const productService = {
     async getAllProducts() {
         try {
