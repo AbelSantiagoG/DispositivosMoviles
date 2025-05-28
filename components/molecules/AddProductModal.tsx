@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect } from 'react';
 import { useCategoryService, type CategoryData } from '../../lib/categories';
+import { useSupplierService, type SupplierData } from '../../lib/suppliers';
 import * as ImagePicker from 'expo-image-picker';
 
 interface AddProductModalProps {
@@ -20,32 +21,34 @@ interface AddProductModalProps {
 
 export function AddProductModal({ isVisible, onClose, onSubmit, control, errors, trigger }: AddProductModalProps) {
     const [categorias, setCategorias] = useState<CategoryData[]>([]);
+    const [proveedores, setProveedores] = useState<(SupplierData & { id: number })[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
     const categoryService = useCategoryService();
-
-    const mockProveedores = [
-        { id: '1', nombre: 'Proveedor 1' },
-        { id: '2', nombre: 'Proveedor 2' },
-        { id: '3', nombre: 'Proveedor 3' },
-        { id: '4', nombre: 'Proveedor 4' },
-        { id: '5', nombre: 'Proveedor 5' }
-    ];
+    const supplierService = useSupplierService();
     
     useEffect(() => {
-        const fetchCategorias = async () => {
+        const fetchData = async () => {
             try {
-                const data = await categoryService.getAllCategories();
-                setCategorias(data);
+                setLoading(true);
+                const [categoriasData, proveedoresData] = await Promise.all([
+                    categoryService.getAllCategories(),
+                    supplierService.getAllSuppliers()
+                ]);
+                
+                setCategorias(categoriasData);
+                setProveedores(proveedoresData);
             } catch (error) {
-                console.error('Error al obtener categorías:', error);
-                Alert.alert('Error', 'No se pudo cargar la lista de categorías');
+                console.error('Error al obtener datos:', error);
+                Alert.alert('Error', 'No se pudieron cargar los datos necesarios');
             } finally {
                 setLoading(false);
             }
         };
         
-        fetchCategorias();
+        if (isVisible) {
+            fetchData();
+        }
     }, [isVisible]);
 
     const handleImageSelection = async () => {
@@ -77,6 +80,16 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors,
         onSubmit({ ...formData, image: selectedImage || undefined });
         setSelectedImage(null);
     };
+
+    if (loading) {
+        return (
+            <Modal isVisible={isVisible} style={{ margin: 0 }} className="justify-end">
+                <View className="bg-black rounded-t-3xl p-4">
+                    <Text className="text-white text-center">Cargando...</Text>
+                </View>
+            </Modal>
+        );
+    }
 
     return (
         <Modal
@@ -136,46 +149,27 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors,
                             placeholderTextColor="#666"
                             onChangeText={onChange}
                             value={value}
-                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
                             multiline
+                            numberOfLines={3}
+                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
                         />
                     )}
                 />
 
-                <View className="flex-row justify-between mb-4">
-                    <View className="flex-1 mr-2">
-                        <Controller
-                            control={control}
-                            name="precio"
-                            render={({ field: { onChange, value } }) => (
-                                <TextInput
-                                    placeholder="Precio"
-                                    placeholderTextColor="#666"
-                                    onChangeText={(text) => onChange(Number(text))}
-                                    value={value?.toString()}
-                                    keyboardType="numeric"
-                                    className="bg-zinc-800 text-white rounded-3xl px-4 py-3"
-                                />
-                            )}
+                <Controller
+                    control={control}
+                    name="precio"
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            placeholder="Precio"
+                            placeholderTextColor="#666"
+                            onChangeText={(text) => onChange(Number(text))}
+                            value={value?.toString()}
+                            keyboardType="numeric"
+                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
                         />
-                    </View>
-                    <View className="flex-1 ml-2">
-                        <Controller
-                            control={control}
-                            name="descuento"
-                            render={({ field: { onChange, value } }) => (
-                                <TextInput
-                                    placeholder="Descuento %"
-                                    placeholderTextColor="#666"
-                                    onChangeText={(text) => onChange(Number(text))}
-                                    value={value?.toString()}
-                                    keyboardType="numeric"
-                                    className="bg-zinc-800 text-white rounded-3xl px-4 py-3"
-                                />
-                            )}
-                        />
-                    </View>
-                </View>
+                    )}
+                />
 
                 <Controller
                     control={control}
@@ -226,11 +220,11 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors,
                                 style={{ color: 'white' }}
                             >
                                 <Picker.Item label="Seleccione un proveedor" value="" />
-                                {mockProveedores.map((proveedor) => (
+                                {proveedores.map((proveedor) => (
                                     <Picker.Item
-                                        key={proveedor.id}
-                                        label={proveedor.nombre}
-                                        value={proveedor.id}
+                                        key={proveedor.id.toString()}
+                                        label={proveedor.name}
+                                        value={proveedor.id.toString()}
                                     />
                                 ))}
                             </Picker>

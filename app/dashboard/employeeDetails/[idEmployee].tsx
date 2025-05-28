@@ -71,7 +71,6 @@ const EmployeeDetails = () => {
 
     const onSubmit = async (data: EmpleadoFormData) => {
         try {
-            
             const updatedData: Partial<EmployeeData> = {
                 name: data.nombre,
                 lastname: data.apellido,
@@ -84,7 +83,14 @@ const EmployeeDetails = () => {
             await employeeService.updateEmployee(Number(idEmployee), updatedData);
             
             setModalVisible(false);
-            Alert.alert('Éxito', 'Empleado actualizado correctamente');
+            Alert.alert('Éxito', 'Empleado actualizado correctamente', [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        router.push('/dashboard/employees');
+                    }
+                }
+            ]);
             
             const updatedEmployee = await employeeService.getEmployeeById(Number(idEmployee));
             setEmployee(updatedEmployee);

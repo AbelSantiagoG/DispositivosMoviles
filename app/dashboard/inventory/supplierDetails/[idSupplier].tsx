@@ -8,7 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { proveedoresFormSchema, ProveedorFormData } from '../../../../validators/suppliers';
-import { supplierService, SupplierData } from '../../../../lib/suppliers';
+import { useSupplierService, SupplierData } from '../../../../lib/suppliers';
 import { EnterpriseData, enterpriseService } from '../../../../lib/enterprises';
 
 const SupplierDetails = () => {
@@ -17,6 +17,8 @@ const SupplierDetails = () => {
     const [loading, setLoading] = useState(true);
     const [supplier, setSupplier] = useState<SupplierData | null>(null);
     const [empresas, setEmpresas] = useState<EnterpriseData[]>([]);
+
+    const supplierService = useSupplierService();
 
     const {
         control,
@@ -30,10 +32,10 @@ const SupplierDetails = () => {
             nombre: '',
             email: '',
             telefono: '',
+            nit: '',
             empresa: '1'
         }
     });
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,11 +51,12 @@ const SupplierDetails = () => {
 
                     setValue('nombre', supplierData.name || '');
                     setValue('email', supplierData.email || '');
-                    setValue('telefono', supplierData.telephone || '');
+                    setValue('telefono', supplierData.phone_number || '');
+                    setValue('nit', supplierData.NIT || '');
                     setValue('empresa', supplierData.enterprise_id ? String(supplierData.enterprise_id) : '1');
                 } catch (supplierError) {
-                    console.error('Error específico al cargar :', supplierError);
-                    Alert.alert('Atención', 'Error');
+                    console.error('Error específico al cargar proveedor:', supplierError);
+                    Alert.alert('Atención', 'Error al cargar datos del proveedor');
                 }
 
             } catch (error) {
@@ -73,27 +76,28 @@ const SupplierDetails = () => {
                 name: data.nombre,
                 email: data.email,
                 phone_number: data.telefono,
-                enterprise_id: Number(data.empresa)
+                NIT: data.nit,
+                enterprise_id: 1  // POSCO
             };
 
             await supplierService.updateSupplier(Number(idSupplier), updatedData);
 
             setModalVisible(false);
-            Alert.alert('Éxito', ' actualizado correctamente');
+            Alert.alert('Éxito', 'Proveedor actualizado correctamente');
 
             // Actualizar datos locales
             const updatedSupplier = await supplierService.getSupplierById(Number(idSupplier));
             setSupplier(updatedSupplier);
         } catch (error) {
-            console.error('Error al actualizar empleado:', error);
-            Alert.alert('Error', 'No se pudo actualizar el empleado');
+            console.error('Error al actualizar proveedor:', error);
+            Alert.alert('Error', 'No se pudo actualizar el proveedor');
         }
     };
 
     const handleDelete = async () => {
         Alert.alert(
             "Confirmación",
-            "¿Está seguro que desea eliminar este empleado?",
+            "¿Está seguro que desea eliminar este proveedor?",
             [
                 {
                     text: "Cancelar",
@@ -104,11 +108,11 @@ const SupplierDetails = () => {
                     onPress: async () => {
                         try {
                             await supplierService.deleteSupplier(Number(idSupplier));
-                            Alert.alert("Éxito", "Empleado eliminado correctamente");
-                            router.replace("/dashboard/employees");
+                            Alert.alert("Éxito", "Proveedor eliminado correctamente");
+                            router.replace("/dashboard/inventory/suppliers");
                         } catch (error) {
-                            console.error("Error al eliminar empleado:", error);
-                            Alert.alert("Error", "No se pudo eliminar el empleado");
+                            console.error("Error al eliminar proveedor:", error);
+                            Alert.alert("Error", "No se pudo eliminar el proveedor");
                         }
                     },
                     style: "destructive"
@@ -117,14 +121,10 @@ const SupplierDetails = () => {
         );
     };
 
-
     const seleccionar = () => {
         setModalVisible(true);
     };
 
-    const onClose = () => {
-        setModalVisible(false);
-    }
     if (loading) {
         return (
             <View className='h-full bg-black p-4 items-center justify-center'>
@@ -147,7 +147,7 @@ const SupplierDetails = () => {
         );
     }
 
-    const empresaNombre = empresas.find(e => e.id === supplier.enterprise_id)?.name || 'Empresa no disponible';
+    const empresaNombre = empresas.find(e => e.id === supplier.enterprise_id)?.name || 'POSCO';
 
     return (
         <View className='h-full bg-black p-4'>
@@ -160,6 +160,7 @@ const SupplierDetails = () => {
                 <Text className="text-white font-semibold text-4xl">{supplier.name}</Text>
                 <Text className="text-white text-sm">{supplier.email}</Text>
                 <Text className="text-white text-sm mt-3">Teléfono: {supplier.phone_number}</Text>
+                <Text className="text-white text-sm mt-3">NIT: {supplier.NIT}</Text>
                 <Text className="text-white text-sm mt-3">Empresa: {empresaNombre}</Text>
             </View>
             <View className='flex-row justify-between mb-7 mt-5'>
@@ -179,13 +180,13 @@ const SupplierDetails = () => {
 
             <Modal
                 isVisible={modalVisible}
-                onBackdropPress={onClose}
+                onBackdropPress={() => setModalVisible(false)}
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
                 style={{ margin: 0, justifyContent: 'flex-end' }}
             >
                 <View className="bg-zinc-700 p-6 rounded-t-3xl">
-                    <TouchableOpacity onPress={onClose} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
+                    <TouchableOpacity onPress={() => setModalVisible(false)} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
 
                     <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Actualizar Proveedor</Text>
 
@@ -235,33 +236,27 @@ const SupplierDetails = () => {
 
                     <Controller
                         control={control}
-                        name="empresa"
+                        name="nit"
                         render={({ field: { onChange, value } }) => (
-                            <View className="bg-zinc-500 text-white text-lg rounded-3xl mb-4 ml-4 mr-4 justify-center">
-                                <Picker
-                                    selectedValue={value}
-                                    onValueChange={onChange}
-                                    style={{ color: 'white' }}
-                                    dropdownIconColor="white"
-                                >
-                                    <Picker.Item label="Seleccionar empresa" value="" />
-                                    {empresas.map((empresa) => (
-                                        <Picker.Item
-                                            key={empresa.id}
-                                            label={empresa.name}
-                                            value={empresa.id}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
+                            <TextInput
+                                className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-4"
+                                placeholder="NIT del proveedor"
+                                placeholderTextColor="#ccc"
+                                value={value}
+                                onChangeText={onChange}
+                            />
                         )}
                     />
+
+                    <View className="bg-zinc-500 text-white text-lg rounded-3xl mb-4 ml-4 mr-4 p-5">
+                        <Text className="text-white text-lg">POSCO</Text>
+                    </View>
 
                     <TouchableOpacity
                         className="bg-white rounded-full p-4 mt-2 mb-4"
                         onPress={handleSubmit(onSubmit)}
                     >
-                        <Text className="text-black font-semibold text-center">Actualizar Empleado</Text>
+                        <Text className="text-black font-semibold text-center">Actualizar Proveedor</Text>
                     </TouchableOpacity>
                 </View>
             </Modal>

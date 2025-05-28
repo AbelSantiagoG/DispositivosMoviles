@@ -16,28 +16,6 @@ interface AddSuppliersModalProps {
 }
 
 export function AddSuppliersModal({ isVisible, onClose, onSubmit, control, errors }: AddSuppliersModalProps) {
-    const [empresas, setEmpresas] = useState([
-        { id: '1', nombre: 'Empresa 1' },
-        { id: '2', nombre: 'Empresa 2' },
-        { id: '3', nombre: 'Empresa 3' }
-    ]);
-
-    useEffect(() => {
-        const fetchEmpresas = async () => {
-            try {
-                const data = await enterpriseService.getAllEnterprises();
-                const formattedEmpresas = data.map((empresa: any) => ({
-                    id: String(empresa.id),
-                    nombre: empresa.name
-                }));
-                setEmpresas(formattedEmpresas);
-            } catch (error) {
-                console.error('Error al obtener empresas:', error);
-            }
-        };
-
-        fetchEmpresas();
-    }, []);
     return (
         <Modal
             isVisible={isVisible}
@@ -97,27 +75,21 @@ export function AddSuppliersModal({ isVisible, onClose, onSubmit, control, error
 
                 <Controller
                     control={control}
-                    name="empresa"
+                    name="nit"
                     render={({ field: { onChange, value } }) => (
-                        <View className="bg-zinc-500 text-white text-lg rounded-3xl mb-4 ml-4 mr-4 justify-center">
-                            <Picker
-                                selectedValue={value}
-                                onValueChange={onChange}
-                                style={{ color: 'white' }}
-                                dropdownIconColor="white"
-                            >
-                                <Picker.Item label="Seleccionar empresa" value="" />
-                                {empresas.map((empresa) => (
-                                    <Picker.Item
-                                        key={empresa.id}
-                                        label={empresa.nombre}
-                                        value={empresa.id}
-                                    />
-                                ))}
-                            </Picker>
-                        </View>
+                        <TextInput
+                            className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-4"
+                            placeholder="NIT del proveedor"
+                            placeholderTextColor="#ccc"
+                            value={value}
+                            onChangeText={onChange}
+                        />
                     )}
                 />
+
+                <View className="bg-zinc-500 text-white text-lg rounded-3xl mb-4 ml-4 mr-4 p-5">
+                    <Text className="text-white text-lg">POSCO</Text>
+                </View>
 
                 <TouchableOpacity
                     className="bg-white rounded-full p-4 mt-2 mb-4"

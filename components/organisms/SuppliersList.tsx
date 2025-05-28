@@ -6,7 +6,7 @@ import { proveedoresFormSchema, type ProveedorFormData } from '../../validators/
 
 import { AddSuppliersModal } from '../molecules/AddSuppliersModal';
 import { SuppliersCard } from '../molecules/SuppliersCard';
-import { supplierService, SupplierData } from '../../lib/suppliers';
+import { useSupplierService, type SupplierData } from '../../lib/suppliers';
 
 interface SuppliersListProps {
     suppliers: Array<SupplierData & { id: number }>;
@@ -15,6 +15,7 @@ interface SuppliersListProps {
 
 export function SuppliersList({ suppliers: initialSuppliers, listSuppliers }: SuppliersListProps) {
     const [suppliers, setSuppliers] = useState<Array<SupplierData & { id: number }>>(initialSuppliers);
+    const supplierService = useSupplierService();
     
     const { handleSubmit, control, formState: { errors }, reset } = useForm<ProveedorFormData>({
         resolver: zodResolver(proveedoresFormSchema),
@@ -22,6 +23,7 @@ export function SuppliersList({ suppliers: initialSuppliers, listSuppliers }: Su
             nombre: '',
             email: '',
             telefono: '',
+            nit: '',
             empresa: '1'
         }
     });
@@ -38,27 +40,26 @@ export function SuppliersList({ suppliers: initialSuppliers, listSuppliers }: Su
 
     const createSupplier = async (data: ProveedorFormData) => {
         try {
-            
             const supplierData: SupplierData = {
                 name: data.nombre,
                 phone_number: data.telefono,
                 email: data.email,
-                enterprise_id: 1
+                NIT: data.nit,
+                enterprise_id: 1  // POSCO
             };
             
-            console.log('Enviando datos para crear :', supplierData);
+            console.log('Enviando datos para crear proveedor:', supplierData);
             
             await supplierService.createSupplier(supplierData);
             
             setModalVisible(false);
             reset();
             listSuppliers(); 
-            Alert.alert('Éxito', 'Creado correctamente');
+            Alert.alert('Éxito', 'Proveedor creado correctamente');
         } catch (error: any) {
-            console.error('Error al crear :', error);
+            console.error('Error al crear proveedor:', error);
             
-            
-            let errorMsg = 'No se pudo crear . Inténtelo de nuevo.';
+            let errorMsg = 'No se pudo crear el proveedor. Inténtelo de nuevo.';
             if (error.response && error.response.data && error.response.data.message) {
                 errorMsg = `Error: ${error.response.data.message}`;
             }
