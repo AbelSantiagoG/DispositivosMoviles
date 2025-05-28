@@ -1,26 +1,27 @@
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
 import { Controller } from 'react-hook-form';
 import Modal from 'react-native-modal';
-import { Control } from 'react-hook-form';
+import { Control, UseFormTrigger } from 'react-hook-form';
 import { ProductoFormData } from '../../validators/products';
 import { Picker } from '@react-native-picker/picker';
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect } from 'react';
 import { categoriesService, CategorieData } from '../../lib/categories';
-
+import * as ImagePicker from 'expo-image-picker';
 
 interface AddProductModalProps {
     isVisible: boolean;
     onClose: () => void;
-    onSubmit: () => void;
+    onSubmit: (data: ProductoFormData & { image?: ImagePicker.ImagePickerAsset }) => void;
     control: Control<ProductoFormData>;
     errors: {};
+    trigger: UseFormTrigger<ProductoFormData>;
 }
 
-export function AddProductModal({ isVisible, onClose, onSubmit, control, errors }: AddProductModalProps) {
+export function AddProductModal({ isVisible, onClose, onSubmit, control, errors, trigger }: AddProductModalProps) {
     const [categorias, setCategorias] = useState<CategorieData[]>([]);
     const [loading, setLoading] = useState(true);
-    
+    const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
     const mockProveedores = [
         { id: '1', nombre: 'Proveedor 1' },
@@ -46,29 +47,82 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
         fetchCategorias();
     }, [isVisible]);
 
+    const handleImageSelection = async () => {
+        try {
+            
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (!result.canceled) {
+                setSelectedImage(result.assets[0]);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar imagen:', error);
+            Alert.alert('Error', 'No se pudo seleccionar la imagen');
+        }
+    };
+
+    const handleSubmit = async () => {
+        const isValid = await trigger();
+        if (!isValid) {
+            Alert.alert('Error', 'Por favor complete todos los campos requeridos correctamente');
+            return;
+        }
+
+        const formData = control._formValues as ProductoFormData;
+        onSubmit({ ...formData, image: selectedImage || undefined });
+        setSelectedImage(null);
+    };
+
     return (
         <Modal
             isVisible={isVisible}
             onBackdropPress={onClose}
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-            style={{ margin: 0, justifyContent: 'flex-end' }}
+            onBackButtonPress={onClose}
+            style={{ margin: 0 }}
+            className="justify-end"
         >
-            <View className="bg-zinc-700 p-6 rounded-t-3xl">
-                <TouchableOpacity onPress={onClose} className="w-52 h-1 bg-white rounded-full self-center mb-4" />
+            <View className="bg-black rounded-t-3xl p-4 h-[90%]">
+                <View className="flex-row justify-between items-center mb-4">
+                    <Text className="text-white text-2xl font-bold">Agregar Producto</Text>
+                    <TouchableOpacity onPress={onClose}>
+                        <Feather name="x" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
 
-                <Text className="text-white text-4xl font-bold mb-4 text-center mt-2">Crear Producto</Text>
+                <TouchableOpacity 
+                    onPress={handleImageSelection}
+                    className="bg-zinc-800 rounded-2xl p-4 mb-4 items-center justify-center"
+                    style={{ height: 200 }}
+                >
+                    {selectedImage ? (
+                        <Image
+                            source={{ uri: selectedImage.uri }}
+                            style={{ width: '100%', height: '100%' }}
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View className="items-center">
+                            <Feather name="camera" size={48} color="white" className="mb-2" />
+                            <Text className="text-white">Seleccionar imagen</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
 
                 <Controller
                     control={control}
                     name="nombre"
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
-                            placeholder="Nombre del Producto"
-                            placeholderTextColor="#ccc"
-                            value={value}
+                            placeholder="Nombre del producto"
+                            placeholderTextColor="#666"
                             onChangeText={onChange}
+                            value={value}
+                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
                         />
                     )}
                 />
@@ -78,49 +132,71 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
                     name="descripcion"
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-4 mr-4"
                             placeholder="Descripción"
-                            placeholderTextColor="#ccc"
-                            value={value}
+                            placeholderTextColor="#666"
                             onChangeText={onChange}
+                            value={value}
+                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
+                            multiline
                         />
                     )}
                 />
-                <View className="flex-row justify-between">
-                    <Controller
-                        control={control}
-                        name="precio"
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="bg-zinc-500 text-white text-lg rounded-3xl p-5 mb-4 ml-4 mr-2 flex-1"
-                                placeholder="Precio"
-                                placeholderTextColor="#ccc"
-                                keyboardType="numeric"
-                                value={value?.toString()}
-                                onChangeText={(text) => onChange(Number(text))}
-                            />
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="stock"
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                className="bg-zinc-500 text-white text-lg  rounded-3xl p-5 mb-4 ml-2 mr-4 flex-1"
-                                placeholder="Stock"
-                                placeholderTextColor="#ccc"
-                                keyboardType="numeric"
-                                value={value?.toString()}
-                                onChangeText={(text) => onChange(Number(text))}
-                            />
-                        )}
-                    />
+
+                <View className="flex-row justify-between mb-4">
+                    <View className="flex-1 mr-2">
+                        <Controller
+                            control={control}
+                            name="precio"
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    placeholder="Precio"
+                                    placeholderTextColor="#666"
+                                    onChangeText={(text) => onChange(Number(text))}
+                                    value={value?.toString()}
+                                    keyboardType="numeric"
+                                    className="bg-zinc-800 text-white rounded-3xl px-4 py-3"
+                                />
+                            )}
+                        />
+                    </View>
+                    <View className="flex-1 ml-2">
+                        <Controller
+                            control={control}
+                            name="descuento"
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    placeholder="Descuento %"
+                                    placeholderTextColor="#666"
+                                    onChangeText={(text) => onChange(Number(text))}
+                                    value={value?.toString()}
+                                    keyboardType="numeric"
+                                    className="bg-zinc-800 text-white rounded-3xl px-4 py-3"
+                                />
+                            )}
+                        />
+                    </View>
                 </View>
+
+                <Controller
+                    control={control}
+                    name="stock"
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            placeholder="Stock"
+                            placeholderTextColor="#666"
+                            onChangeText={(text) => onChange(Number(text))}
+                            value={value?.toString()}
+                            keyboardType="numeric"
+                            className="bg-zinc-800 text-white rounded-3xl px-4 py-3 mb-4"
+                        />
+                    )}
+                />
+
                 <Controller
                     control={control}
                     name="categoria"
                     render={({ field: { onChange, value } }) => (
-                        <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
+                        <View className="bg-zinc-800 rounded-3xl mb-4">
                             <Picker
                                 selectedValue={value && value.length > 0 ? value[0] : ''}
                                 onValueChange={(itemValue) => onChange([itemValue])}
@@ -143,10 +219,10 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
                     control={control}
                     name="proveedor"
                     render={({ field: { onChange, value } }) => (
-                        <View className="bg-zinc-500 rounded-3xl mb-4 ml-4 mr-4">
+                        <View className="bg-zinc-800 rounded-3xl mb-4">
                             <Picker
                                 selectedValue={value}
-                                onValueChange={(itemValue) => onChange(itemValue)}
+                                onValueChange={onChange}
                                 style={{ color: 'white' }}
                             >
                                 <Picker.Item label="Seleccione un proveedor" value="" />
@@ -161,14 +237,13 @@ export function AddProductModal({ isVisible, onClose, onSubmit, control, errors 
                         </View>
                     )}
                 />
-                <View className="flex-row justify-between mt-4">
-                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 ml-4 mr-4 flex-1" onPress={onSubmit}>
-                        <Text className="text-black font-semibold text-center text-xl">➕ Agregar Producto</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className=" bg-white rounded-3xl p-5 mb-3 mr-4 " >
-                        <Feather name="camera" size={24} color="black" />
-                    </TouchableOpacity>
-                </View>
+
+                <TouchableOpacity 
+                    className="bg-white rounded-3xl p-5 mb-3" 
+                    onPress={handleSubmit}
+                >
+                    <Text className="text-black font-semibold text-center text-xl">➕ Agregar Producto</Text>
+                </TouchableOpacity>
             </View>
         </Modal>
     );
