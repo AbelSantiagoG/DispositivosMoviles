@@ -3,6 +3,7 @@ import api from './api';
 export interface InvoiceSale {
   quantity: number;
   product_id: number;
+  client_id?: number; // Para facturas electrónicas
 }
 
 export interface CreateInvoiceRequest {
