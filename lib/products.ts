@@ -1,6 +1,6 @@
 import api from './api';
 import { eq } from 'drizzle-orm';
-import { product, pendingDeletions } from '../db/schema';
+import { product,  } from '../db/schema';
 import { useDrizzle } from '../context/DatabaseContext';
 
 export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
@@ -175,8 +175,8 @@ export const useProductService = () => {
                             .values(localProduct)
                             .run();
 
-                        console.log('✅ Producto creado localmente:', result.lastInsertId);
-                        return { ...localProduct, id: result.lastInsertId };
+                        console.log('✅ Producto creado localmente:', result.lastInsertRowId);
+                        return { ...localProduct, id: result.lastInsertRowId };
                     } catch (dbError) {
                         console.error('Error al crear producto localmente:', dbError);
                         throw new Error('No se pudo crear el producto localmente. Por favor, verifica todos los campos.');
@@ -243,8 +243,8 @@ export const useProductService = () => {
                             .values(localProduct)
                             .run();
 
-                        console.log('✅ Producto con imagen creado localmente:', result.lastInsertId);
-                        return { ...localProduct, id: result.lastInsertId };
+                        console.log('✅ Producto con imagen creado localmente:', result.lastInsertRowId);
+                        return { ...localProduct, id: result.lastInsertRowId };
                     } catch (dbError) {
                         console.error('Error al crear producto con imagen localmente:', dbError);
                         throw new Error('No se pudo crear el producto localmente. Por favor, verifica todos los campos.');
@@ -273,8 +273,7 @@ export const useProductService = () => {
                             .update(product)
                             .set({ 
                                 ...data,
-                                synced: false,
-                                updated_at: new Date().toISOString()
+                                synced: false
                             })
                             .where(eq(product.id, id))
                             .run();

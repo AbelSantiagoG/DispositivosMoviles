@@ -1,16 +1,13 @@
-import React from 'react';
-import { Image } from 'react-native';
+import { View, Image } from 'react-native';
+import { logoContainer, logoWrapper, logo } from '../Tokens';
 
-export const Logo = () => {
-  return (
-    <Image
-      testID="logo-image"
-      source={require('../../assets/logo.png')}
-      style={{
-        width: 200,
-        height: 200,
-      }}
-      resizeMode="contain"
-    />
-  );
-}; 
+export function Logo() {
+    return (
+        <Image 
+            className={logo} 
+            source={require("../../assets/logo.png")} 
+            resizeMode="contain"
+            testID="logo-image" 
+        />
+    );
+}
